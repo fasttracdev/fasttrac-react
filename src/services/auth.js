@@ -8,11 +8,19 @@ export default class Auth {
 	    isRedirect: false
 	}
 
+	// auth0 = new auth0.WebAuth({
+	// 	domain: 'ddx.auth0.com',
+	// 	clientID: '1xw2DSMpt6VAdbH7bZH9XKnRBOX9D2M7',
+	// 	responseType: 'code',
+	// 	redirectUri: 'http://localhost:8000/callback',
+	// 	scope: 'email openid'
+	// });
+
 	auth0 = new auth0.WebAuth({
 		domain: 'ddx.auth0.com',
-		clientID: '1xw2DSMpt6VAdbH7bZH9XKnRBOX9D2M7',
+		clientID: 'doDoXJvCd9eGYncGKidZCYwsn8W7lwN8',
 		responseType: 'code',
-		redirectUri: 'http://localhost:8000/callback',
+		redirectUri: 'http://192.168.2.142:8080/callback',
 		scope: 'email openid'
 	});
 
@@ -41,7 +49,7 @@ export default class Auth {
 	    localStorage.removeItem('expires_at');
 	    this.auth0.logout({
 	    	returnTo: 'http://localhost:8000/home',
-  			clientID: '1xw2DSMpt6VAdbH7bZH9XKnRBOX9D2M7'
+  			clientID: 'doDoXJvCd9eGYncGKidZCYwsn8W7lwN8'
 	    });
 	}
 

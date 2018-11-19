@@ -134,7 +134,7 @@ export const httpHandleError = error => {
   try {
     var xhr = error.request
     if (!xhr.response) {
-      showErrorMsg(MESSAGES.request_timeout)
+      // showErrorMsg(MESSAGES.request_timeout)
       return Promise.reject({})
     }
 

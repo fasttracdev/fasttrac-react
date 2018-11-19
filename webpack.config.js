@@ -26,17 +26,6 @@ let baseConfig = {
               localIdentName: '[name]__[local]___[hash:base64:5]',
               camelCase: true
             }
-          },
-          'postcss-loader',
-          'sass-loader',
-          {
-            loader: 'sass-resources-loader',
-            options: {
-              resources: [
-                path.resolve(__dirname, 'scss/_variables.scss'),
-                path.resolve(__dirname, 'scss/mixins.scss')
-              ]
-            }
           }
         ]
       },
@@ -73,14 +62,7 @@ let baseConfig = {
   },
   resolve: {
     alias: {
-      src: path.resolve(__dirname, 'src'),
-      assets: path.resolve(__dirname, 'assets'),
-      common: path.resolve(__dirname, 'src/common'),
-      utilities: path.resolve(__dirname, 'src/common/utilities'),
-      '@console': path.resolve(__dirname, 'src/console'),
-      '@groups': path.resolve(__dirname, 'src/groups'),
-      '@ListingExperience': path.resolve(__dirname, 'src/ListingExperience'),
-      '@local-insights': path.resolve(__dirname, 'src/local-insights')
+      src: path.resolve(__dirname, 'src')
     }
   },
   output: {

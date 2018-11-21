@@ -8,6 +8,7 @@ export default class Auth {
 	state = {
 	    isRedirect: false
 	}
+	
 	auth0 = new auth0.WebAuth({
 		domain: 'ddx.auth0.com',
 		clientID: this._env.getENV().CLIENTID,
@@ -15,14 +16,6 @@ export default class Auth {
 		redirectUri: this._env.getENV().API_BASE_URL + '/callback',
 		scope: this._env.getENV().SCOPE
 	});
-
-	// auth0 = new auth0.WebAuth({
-	// 	domain: 'ddx.auth0.com',
-	// 	clientID: this._env.getENV().CLIENTID,
-	// 	responseType: this._env.getENV().CODE,
-	// 	redirectUri: this._env.getENV().API_BASE_URL + '/callback',
-	// 	scope: this._env.getENV().SCOPE
-	// });
 
 	constructor() {
 	  	this.login = this.login.bind(this);

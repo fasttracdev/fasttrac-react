@@ -1,7 +1,13 @@
 // import { showErrorMsg } from './notification'
 // import MESSAGES from './../configs/messages'
 import axios from 'axios';
-const API_BASE_URL = 'http://localhost:3000';
+var API_BASE_URL = '';
+if (!process.env || Object.keys(process.env).length <= 0) {
+  API_BASE_URL = 'http://localhost:3000';
+}else {
+  API_BASE_URL = process.env.REACT_APP_API_URL;
+}
+
 /**
  * Get Common Headers
  *

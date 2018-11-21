@@ -15,7 +15,7 @@ npm v5.6.0 (Automatically install with node. But please check the version)
 
 ```
 
-### Installation staeps
+### Installation steps
 
 
 ```
@@ -29,4 +29,10 @@ Step 3: Run: 'npm start' to start this project on your local machine
   
 step 4: Project running for local machine 'http://localhost:8000/'
 
+```
+
+### Production Build 
+```
+Run this command
+   `npm run build:production`
 ```

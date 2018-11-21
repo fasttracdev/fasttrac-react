@@ -1,12 +1,8 @@
-// import { showErrorMsg } from './notification'
+import Environment from '../environment/env'
 // import MESSAGES from './../configs/messages'
 import axios from 'axios';
-var API_BASE_URL = '';
-if (!process.env || Object.keys(process.env).length <= 0) {
-  API_BASE_URL = 'http://localhost:3000';
-}else {
-  API_BASE_URL = process.env.REACT_APP_API_URL;
-}
+var _env = new Environment();
+
 
 /**
  * Get Common Headers
@@ -33,7 +29,7 @@ export const getCommonHeaders = () => {
  */
 export const httpGet = url => {
   try {
-    var combineUrl = API_BASE_URL + url;
+    var combineUrl = _env.getENV().API_BASE_URL + url;
     return axios
       .get(combineUrl, { headers: getCommonHeaders() })
       .then(res => httpHandleResponse(res))
@@ -52,7 +48,7 @@ export const httpGet = url => {
  */
 export const httpPost = (url, params) => {
   try {
-    var combineUrl = API_BASE_URL + url;
+    var combineUrl = _env.getENV().API_BASE_URL + url;
     return axios
       .post(combineUrl, params, { headers: getCommonHeaders() })
       .then(res => httpHandleResponse(res))
@@ -71,7 +67,7 @@ export const httpPost = (url, params) => {
  */
 export const httpPput = (url, params) => {
   try {
-    var combineUrl = API_BASE_URL + url;
+    var combineUrl = _env.getENV().API_BASE_URL + url;
     return axios
       .put(combineUrl, params, { headers: getCommonHeaders() })
       .then(res => httpHandleResponse(res))
@@ -90,7 +86,7 @@ export const httpPput = (url, params) => {
  */
 export const httpPatch = (url, params) => {
   try {
-    var combineUrl = API_BASE_URL + url;
+    var combineUrl = _env.getENV().API_BASE_URL + url;
     return axios
       .patch(combineUrl, params, { headers: getCommonHeaders() })
       .then(res => httpHandleResponse(res))
@@ -108,7 +104,7 @@ export const httpPatch = (url, params) => {
  */
 export const httpDelete = url => {
   try {
-    var combineUrl = API_BASE_URL + url;
+    var combineUrl = _env.getENV().API_BASE_URL + url;
     return axios
       .delete(combineUrl, { headers: getCommonHeaders() })
       .then(res => httpHandleResponse(res))

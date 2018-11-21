@@ -3,13 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
     "@lingui/babel-preset-react": "^2.7.0",
     "@material-ui/core": "^3.4.0",
     "auth0-js": "^9.8.1",
     "axios": "^0.18.0",
+    "babel-loader": "^8.0.4",
     "cross-env": "^5.2.0",
     "dotenv-webpack": "^1.5.7",
+    "env-cmd": "^8.0.2",
     "history": "^4.7.2",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
     "moment": "^2.22.2",
     "notistack": "^0.3.7",
     "path": "^0.12.7",
@@ -21,22 +28,17 @@
     "react-router-dom": "^4.3.1",
     "react-scripts": "^2.0.5",
     "store": "^2.0.12",
+    "svg-inline-loader": "^0.8.0",
     "sweetalert2": "^7.28.11",
     "validator": "^10.9.0",
-    "webpack-merge": "^4.1.4",
-    "@babel/core": "^7.1.2",
-    "@babel/preset-env": "^7.1.0",
-    "@babel/preset-react": "^7.0.0",
-    "babel-loader": "^8.0.4",
-    "html-loader": "^0.5.5",
-    "html-webpack-plugin": "^3.2.0",
-    "svg-inline-loader": "^0.8.0",
     "webpack": "4.19.1",
-    "webpack-cli": "^3.1.2"
+    "webpack-cli": "^3.1.2",
+    "webpack-merge": "^4.1.4"
   },
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack-dev-server --mode=development --host 127.0.0.1 --port 8000 --progress",
-    "build": "react-scripts build",
+    "build:production": "env-cmd .env.production react-scripts build",
+    "build:staging": "env-cmd .env.staging react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -48,5 +50,6 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {}
 }

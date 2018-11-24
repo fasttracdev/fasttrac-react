@@ -4,6 +4,7 @@ export default class Environment {
     var CLIENTID = ''
     var APP_BASE_URL = ''
     var data = {}
+
     if (process.env.NODE_ENV === 'development') {
       API_BASE_URL = 'http://localhost:8080'
       APP_BASE_URL = 'http://localhost:8000'

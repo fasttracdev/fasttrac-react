@@ -34,3 +34,11 @@
     transform: rotate(360deg);
   }
 }
+
+.driver-form-wrapper label {
+  width: 100%;
+}
+
+.driver-form-wrapper input {
+  width: 100%;
+}

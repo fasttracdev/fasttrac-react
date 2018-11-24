@@ -9,6 +9,7 @@ import { httpPost } from '../../../services/https';
 import { getUserDataFromLocalStorage, convertFormattedDate } from '../../../services/helper';
 import MESSAGES from '../../../services/messages';
 import '../style.css';
+import SearchDriver from './search-driver'
 
 // Components
 import Sidebar from '../sidebar';
@@ -132,6 +133,17 @@ class AdminAddDriver extends Component {
 		return true;
 	}
 
+	/**
+	 * Get driver data click
+	 */
+	getDriverDataOnSearch(driver) {
+		this.setState({
+			firstName: driver.firstname,
+			lastName: driver.lastname,
+			email: driver.email,
+		})
+	}
+
 	render() {
 		const { user } = this.user;
 		const { isSubmitAddDriver } = this.state;
@@ -155,14 +167,24 @@ class AdminAddDriver extends Component {
 							        <div className="card">
 								        <div className="card-body">
 								            <h2 className="card-title">Add Driver</h2>
-								            <div className="text-left">
+								            <div className="text-left driver-form-wrapper">
+														<SearchDriver setData={data => this.getDriverDataOnSearch(data)} />
 										        <form className="forms-sample">
 											        <div className="form-group">
 											          	<label htmlFor="exampleInputName1">First Name</label>
 											          	<input 
 											          		type="text" 
 											          		className="form-control" 
-											          		onChange={(event) => this.state.firstName = event.target.value}
+																		onChange={e =>
+																			this.setState({
+																				firstName: e.target.value
+																			})
+																		}
+																		value={
+																			this.state.firstName
+																				? this.state.firstName
+																				: ''
+																		}
 											          		placeholder="First Name" />
 											          	{
 											          		this.state.error.isFirstNameRequired &&
@@ -174,8 +196,18 @@ class AdminAddDriver extends Component {
 											          	<input 
 											          		type="text" 
 											          		className="form-control" 
-											          		onChange={(event) => this.state.lastName = event.target.value}
-											          		placeholder="Last Name" />
+																		onChange={e =>
+																			this.setState({
+																				lastName: e.target.value
+																			})
+																		}
+																		placeholder="Last Name"
+																		value={
+																			this.state.lastName
+																				? this.state.lastName
+																				: ''
+																		}
+																		/>
 											          	{
 											          		this.state.error.isLastNameRequired &&
 											          		<div className="form-error">Last Name is required</div>
@@ -186,9 +218,19 @@ class AdminAddDriver extends Component {
 											          	<input 
 											          		type="email" 
 											          		className="form-control" 
-											          		onChange={(event) => this.state.email = event.target.value}
+																		onChange={e =>
+																			this.setState({
+																				email: e.target.value
+																			})
+																		}
 											          		id="exampleInputEmail3" 
-											          		placeholder="Email" />
+											          		placeholder="Email" 
+																		value={
+																			this.state.email
+																				? this.state.email
+																				: ''
+																		}
+																	/>
 											          	{
 											          		this.state.error.isEmailRequired &&
 											          		<div className="form-error">Email is required</div>

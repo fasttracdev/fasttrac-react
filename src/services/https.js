@@ -1,8 +1,13 @@
 import Environment from '../environment/env'
+import { getUserDataFromLocalStorage } from './helper'
 // import MESSAGES from './../configs/messages'
 import axios from 'axios';
+import auth0 from 'auth0-js';
 var _env = new Environment();
-
+var _auth0 = new auth0.WebAuth({
+  domain: _env.getENV().DOMAIN,
+  clientID: _env.getENV().CLIENTID
+});
 
 /**
  * Get Common Headers
@@ -12,9 +17,10 @@ var _env = new Environment();
 export const getCommonHeaders = () => {
   try {
     var headers = {
-      Accept: 'application/json',
+      'Accept': 'application/json',
       'x-consumer-username': 'onelogin',
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': 'bearer ' + getUserDataFromLocalStorage().token
     }
     return headers
   } catch (e) {
@@ -149,6 +155,11 @@ export const httpHandleError = error => {
           break
 
         case 401:
+          localStorage.clear();
+          _auth0.logout({
+            returnTo: _env.getENV().APP_BASE_URL + '/home',
+            clientID: _env.getENV().CLIENTID
+          });
           // case 402:
           // showErrorMsg('Session expired.')
           break

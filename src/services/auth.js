@@ -10,13 +10,14 @@ export default class Auth {
 	}
 	
 	auth0 = new auth0.WebAuth({
-		domain: 'ddx.auth0.com',
+		domain: this._env.getENV().DOMAIN,
 		clientID: this._env.getENV().CLIENTID,
 		responseType: this._env.getENV().CODE,
-		redirectUri: this._env.getENV().API_BASE_URL + '/callback',
+		redirectUri: this._env.getENV().APP_BASE_URL + '/callback',
 		scope: this._env.getENV().SCOPE
-	});
-
+	});	
+	
+	
 	constructor() {
 	  	this.login = this.login.bind(this);
 	  	this.logout = this.logout.bind(this);
@@ -36,13 +37,10 @@ export default class Auth {
 	}
 
 	logout() {
-	    // Clear Access Token and ID Token from local storage
-	    localStorage.removeItem('access_token');
-	    localStorage.removeItem('id_token');
-	    localStorage.removeItem('expires_at');
+		localStorage.clear();
 	    this.auth0.logout({
-			returnTo: this._env.getENV().API_BASE_URL + '/home',
-			clientID: this._env.getENV().CLIENTID
+			returnTo: this._env.getENV().APP_BASE_URL + '/home',
+		 	clientID: this._env.getENV().CLIENTID
 	    });
 	}
 

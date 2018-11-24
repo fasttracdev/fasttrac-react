@@ -5,7 +5,7 @@ const auth = new Auth();
 
 class Home extends Component {
 	goTo(route) {
-	    this.props.history.replace(`/${route}`)
+	  this.props.history.replace(`/${route}`)
 	}
 
 	login() {
@@ -26,7 +26,7 @@ class Home extends Component {
 						<Button
 						bsStyle="primary"
 						className="btn-margin"
-						onClick={this.goTo.bind(this, 'home')}
+						onClick={() =>this.goTo('home')}
 						>
 						Home
 						</Button>
@@ -35,7 +35,7 @@ class Home extends Component {
 							<Button
 							bsStyle="primary"
 							className="btn-margin"
-							onClick={this.login.bind(this)}
+							onClick={() =>this.login()}
 							>
 							Log In
 							</Button>
@@ -46,7 +46,7 @@ class Home extends Component {
 							<Button
 							bsStyle="primary"
 							className="btn-margin"
-							onClick={this.logout.bind(this)}
+							onClick={() => this.logout()}
 							>
 							Log Out
 							</Button>

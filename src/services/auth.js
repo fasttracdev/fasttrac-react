@@ -1,29 +1,23 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom'
 import auth0 from 'auth0-js';
-
+import Environment from '../environment/env'
 export default class Auth {
+	_env = new Environment();
 
 	state = {
 	    isRedirect: false
 	}
-
-	// auth0 = new auth0.WebAuth({
-	// 	domain: 'ddx.auth0.com',
-	// 	clientID: '1xw2DSMpt6VAdbH7bZH9XKnRBOX9D2M7',
-	// 	responseType: 'code',
-	// 	redirectUri: 'http://localhost:8000/callback',
-	// 	scope: 'email openid'
-	// });
-
+	
 	auth0 = new auth0.WebAuth({
-		domain: 'ddx.auth0.com',
-		clientID: 'doDoXJvCd9eGYncGKidZCYwsn8W7lwN8',
-		responseType: 'code',
-		redirectUri: 'http://192.168.2.142:8080/callback',
-		scope: 'email openid'
-	});
-
+		domain: this._env.getENV().DOMAIN,
+		clientID: this._env.getENV().CLIENTID,
+		responseType: this._env.getENV().CODE,
+		redirectUri: this._env.getENV().APP_BASE_URL + '/callback',
+		scope: this._env.getENV().SCOPE
+	});	
+	
+	
 	constructor() {
 	  	this.login = this.login.bind(this);
 	  	this.logout = this.logout.bind(this);
@@ -43,13 +37,10 @@ export default class Auth {
 	}
 
 	logout() {
-	    // Clear Access Token and ID Token from local storage
-	    localStorage.removeItem('access_token');
-	    localStorage.removeItem('id_token');
-	    localStorage.removeItem('expires_at');
+		localStorage.clear();
 	    this.auth0.logout({
-	    	returnTo: 'http://localhost:8000/home',
-  			clientID: 'doDoXJvCd9eGYncGKidZCYwsn8W7lwN8'
+			returnTo: this._env.getENV().APP_BASE_URL + '/home',
+		 	clientID: this._env.getENV().CLIENTID
 	    });
 	}
 

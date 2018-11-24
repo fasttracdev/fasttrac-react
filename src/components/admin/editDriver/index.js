@@ -27,18 +27,14 @@ class AdminEditDriver extends Component {
 	};
 
 	componentDidMount() {
-		console.log(this.props.match.params.id);
 		var id = this.props.match.params.id;
 		httpGet('/user/profile/' + id).then((success)=> {
-			console.log(success);
 			var userMeta = success.data.user_metadata;
 			this.setState({
 				firstName: userMeta.first_name,
 				lastName: userMeta.last_name,
 			});
-		}, (err) => {
-			
-		});
+		}, (err) => {});
 	}
 
     /* Constructor */

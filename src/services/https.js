@@ -1,12 +1,13 @@
-// import { showErrorMsg } from './notification'
+import Environment from '../environment/env'
+import { getUserDataFromLocalStorage } from './helper'
 // import MESSAGES from './../configs/messages'
 import axios from 'axios';
-var API_BASE_URL = '';
-if (!process.env || Object.keys(process.env).length <= 0) {
-  API_BASE_URL = 'http://localhost:3000';
-}else {
-  API_BASE_URL = process.env.REACT_APP_API_URL;
-}
+import auth0 from 'auth0-js';
+var _env = new Environment();
+var _auth0 = new auth0.WebAuth({
+  domain: _env.getENV().DOMAIN,
+  clientID: _env.getENV().CLIENTID
+});
 
 /**
  * Get Common Headers
@@ -16,9 +17,10 @@ if (!process.env || Object.keys(process.env).length <= 0) {
 export const getCommonHeaders = () => {
   try {
     var headers = {
-      Accept: 'application/json',
+      'Accept': 'application/json',
       'x-consumer-username': 'onelogin',
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': 'bearer ' + getUserDataFromLocalStorage().token
     }
     return headers
   } catch (e) {
@@ -33,7 +35,7 @@ export const getCommonHeaders = () => {
  */
 export const httpGet = url => {
   try {
-    var combineUrl = API_BASE_URL + url;
+    var combineUrl = _env.getENV().API_BASE_URL + url;
     return axios
       .get(combineUrl, { headers: getCommonHeaders() })
       .then(res => httpHandleResponse(res))
@@ -52,7 +54,7 @@ export const httpGet = url => {
  */
 export const httpPost = (url, params) => {
   try {
-    var combineUrl = API_BASE_URL + url;
+    var combineUrl = _env.getENV().API_BASE_URL + url;
     return axios
       .post(combineUrl, params, { headers: getCommonHeaders() })
       .then(res => httpHandleResponse(res))
@@ -71,7 +73,7 @@ export const httpPost = (url, params) => {
  */
 export const httpPput = (url, params) => {
   try {
-    var combineUrl = API_BASE_URL + url;
+    var combineUrl = _env.getENV().API_BASE_URL + url;
     return axios
       .put(combineUrl, params, { headers: getCommonHeaders() })
       .then(res => httpHandleResponse(res))
@@ -90,7 +92,7 @@ export const httpPput = (url, params) => {
  */
 export const httpPatch = (url, params) => {
   try {
-    var combineUrl = API_BASE_URL + url;
+    var combineUrl = _env.getENV().API_BASE_URL + url;
     return axios
       .patch(combineUrl, params, { headers: getCommonHeaders() })
       .then(res => httpHandleResponse(res))
@@ -108,7 +110,7 @@ export const httpPatch = (url, params) => {
  */
 export const httpDelete = url => {
   try {
-    var combineUrl = API_BASE_URL + url;
+    var combineUrl = _env.getENV().API_BASE_URL + url;
     return axios
       .delete(combineUrl, { headers: getCommonHeaders() })
       .then(res => httpHandleResponse(res))
@@ -153,6 +155,11 @@ export const httpHandleError = error => {
           break
 
         case 401:
+          localStorage.clear();
+          _auth0.logout({
+            returnTo: _env.getENV().APP_BASE_URL + '/home',
+            clientID: _env.getENV().CLIENTID
+          });
           // case 402:
           // showErrorMsg('Session expired.')
           break

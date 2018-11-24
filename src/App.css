@@ -42,3 +42,93 @@
 .driver-form-wrapper input {
   width: 100%;
 }
+.popup_inner {
+  border-radius: 6px;
+  max-width: 100%;
+}
+.search-result-list {
+  padding: 5px 5px 0;
+  overflow-y: auto;
+  height: 100%;
+  text-align: left;
+  max-height: 450px;
+  margin-bottom: 0;
+  list-style: none;
+}
+.search-result-list li {
+  cursor: pointer;
+  margin-bottom: 15px;
+  padding: 10px 15px;
+  -ms-box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  border: 0;
+  min-height: 70px;
+}
+.search-result-list li .list-img {
+  float: left;
+  height: 50px;
+  width: 50px;
+  padding: 0;
+}
+/* .search-result-list li .list-img img {
+  height: 100%;
+  width: 100%;
+  border: 3px solid #eee;
+  border-radius: 100%;
+} */
+.search-result-list li .list-info-driver {
+  display: block;
+  /* margin-left: 65px; */
+  padding-top: 4px;
+}
+.search-result-list li .list-info-driver .driver-title {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+.search-result-list li .list-info-driver .list-info-other {
+  margin-top: 8px;
+}
+.search-result-list li .list-info-driver .list-info-other > span {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #999;
+}
+.search-result-list li .list-info-driver .list-info-other > span:first-child {
+  margin-right: 20px;
+  margin-bottom: 5px;
+}
+.search-result-list li .list-info-driver .list-info-other .info-label {
+  float: left;
+  font-weight: bold;
+}
+.search-result-list li .list-info-driver .list-info-other .info-txt {
+  display: block;
+  word-break: break-all;
+  margin-left: 43px;
+  font-family: "Roboto", sans-serif;
+}
+.search-result-list li .list-info-driver .list-detailed-cont .list-info-other > span {
+  font-weight: normal;
+  margin-bottom: 5px;
+}
+.search-result-list li .list-info-driver .list-detailed-cont .list-info-other .info-label {
+  font-weight: normal;
+  color: #444;
+}
+.search-result-list li .list-info-driver .list-detailed-cont .list-info-other .info-txt {
+  margin-left: 60px;
+}
+.search-result-list li:hover {
+  background-color: #f7f7f7;
+}
+.search-result-list .list-info-inner {
+  display: inline-block;
+  width: 100%;
+}
+.auth0-logo img {
+  width: 200px;
+  margin-bottom: 25px;
+}

@@ -51,6 +51,19 @@ class SearchDriver extends Component {
     })  
     this.props.setData(driver)
   }
+
+  /**
+   * Handle scroll
+   * @param {*} event
+   */
+  handleScroll(event) {
+    if (
+      event.target.offsetHeight + event.target.scrollTop ===
+      event.target.scrollHeight
+    ) {
+      console.log("load more will go here");
+    }
+  }
   
   /**
    * Render HTML
@@ -60,15 +73,14 @@ class SearchDriver extends Component {
     return (
       <div className="driver-searching-wrap driver-name-box">
         <div className="search-driver-wrap">
-          <div className="search-bar-wrap">
+          <div className="search-bar-wrap form-group">
             <label htmlFor="exampleInputName1">Search Driver</label>
             <input
               type="text"
               className="form-control"
               onChange={e => this.getDriversList(e)}
               autoComplete="off"
-              placeholder="Search By driver Name"
-              
+              placeholder="Search By Driver Name Or Driver Number"              
             />           
           </div>
             {
@@ -84,7 +96,7 @@ class SearchDriver extends Component {
                         <li
                           onClick={() => that.getDriverDetail(driver)}
                           key={'mykey' + index}
-                        >                        
+                        >      
                           <div className="list-info-driver">
                             <div className="list-info-inner">
                               <span className="driver-title">

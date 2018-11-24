@@ -1,62 +1,50 @@
+/**
+ * Import section
+ */
 import React, { Component } from 'react';
-import { Navbar, Button } from 'react-bootstrap';
 import Auth from '../../services/auth.js';
 const auth = new Auth();
-
+/**
+ * Calss
+ */
 class Home extends Component {
-	goTo(route) {
-	  this.props.history.replace(`/${route}`)
-	}
 
+	/**
+	 * Login 
+	 */
 	login() {
 		auth.login();
 	}
 
-	logout() {
-		auth.logout();
-	}
+	/**
+	 * Render HTML
+	 */
 	render() {
 		return (
 			<div>
-				<Navbar fluid>
-					<Navbar.Header>
-						<Navbar.Brand>
-							<a href="#">Auth0 - React</a>
-						</Navbar.Brand>
-						<Button
-						bsStyle="primary"
-						className="btn-margin"
-						onClick={() =>this.goTo('home')}
-						>
-						Home
-						</Button>
-						{
-							!auth.isAuthenticated() && (
-							<Button
-							bsStyle="primary"
-							className="btn-margin"
-							onClick={() =>this.login()}
-							>
-							Log In
-							</Button>
-							)
-						}
-						{
-							auth.isAuthenticated() && (
-							<Button
-							bsStyle="primary"
-							className="btn-margin"
-							onClick={() => this.logout()}
-							>
-							Log Out
-							</Button>
-							)
-						}
-					</Navbar.Header>
-				</Navbar>
+				<div className="container-scroller">
+					<div className="container-fluid page-body-wrapper full-page-wrapper auth-page">
+						<div className="content-wrapper d-flex align-items-center auth auth-bg-1 theme-one">
+							<div className="row w-100">
+								<div className="col-lg-4 mx-auto">
+									<div className="auto-form-wrapper">
+										<div className="auth0-logo">
+											<img src="../../src/images/auth0-logo-blue.png" alt="auth0-logo"/>
+										</div>
+										<div className="form-group">
+											<button className="btn btn-primary submit-btn btn-block" onClick={() => this.login()}>Login</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		);
 	}
 }
-
+/**
+ * Export Section
+ */
 export default Home;

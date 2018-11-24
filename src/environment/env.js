@@ -10,7 +10,7 @@ export default class Environment {
       CLIENTID = '1xw2DSMpt6VAdbH7bZH9XKnRBOX9D2M7'
     }else {
       API_BASE_URL = process.env.REACT_APP_API_URL
-      APP_BASE_URL = process.env.REACT_APP_APP_URL
+      APP_BASE_URL = process.env.REACT_APP_API_APP_URL
       CLIENTID = process.env.REACT_APP_API_CLIENTID
     }
     data = {

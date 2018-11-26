@@ -1,5 +1,6 @@
 import Environment from '../environment/env'
 import { getUserDataFromLocalStorage } from './helper'
+
 // import MESSAGES from './../configs/messages'
 import axios from 'axios';
 import auth0 from 'auth0-js';
@@ -142,32 +143,27 @@ export const httpHandleError = error => {
   try {
     var xhr = error.request
     if (!xhr.response) {
-      // showErrorMsg(MESSAGES.request_timeout)
       return Promise.reject({})
     }
 
     var err = extractJSON(xhr.response)
 
-    if (xhr && xhr.status && err) {
-      switch (xhr.status) {
-        case 400:
-          // showErrorMsg(err.error)
-          break
 
+
+    if (xhr && xhr.status && err) {
+      var status = err.errors.statusCode ? err.errors.statusCode : xhr.status
+      switch (status) {
+        case 400:
+          break
         case 401:
           localStorage.clear();
           _auth0.logout({
             returnTo: _env.getENV().APP_BASE_URL + '/home',
             clientID: _env.getENV().CLIENTID
           });
-          // case 402:
-          // showErrorMsg('Session expired.')
           break
-
         case 404:
-          // showErrorMsg(err.message)
           break
-
         case 412:
           // if (Object.keys(err.errors)[0] == 'q') {
           //   showErrorMsg('Please enter valid location.')
@@ -175,18 +171,12 @@ export const httpHandleError = error => {
           //   showErrorMsg(err.errors[Object.keys(err.errors)[0]][0])
           // }
           break
-
-        case 422:
-          // showErrorMsg(err.message)
+        case 422:          
           break
-
         default:
-          // showErrorMsg(MESSAGES.INTERNAL_ERROR)
       }
-    } else {
-      // showErrorMsg(MESSAGES.INTERNAL_ERROR)
-    }
-    return Promise.reject({})
+    } 
+    return Promise.reject(err)
   } catch (e) {
     return Promise.reject({})
   }

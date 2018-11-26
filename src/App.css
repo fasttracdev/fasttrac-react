@@ -132,3 +132,54 @@
   width: 200px;
   margin-bottom: 25px;
 }
+.add-driver-title {
+  color: #000 !important;
+}
+.page-loader {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 50%;
+  z-index: 9;
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.page-loader .page-loader-col {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+.page-loader .page-loader-col .page-spinner-col {
+  position: absolute;
+  top: 50%;
+  z-index: 1000;
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.sweet-loading {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+}
+.sweet-loading div {
+  width: 18px;
+  height: 18px;
+}
+.custom-loader-wrap {
+  position: relative;
+}
+.driver-not-found {
+  text-align: center;
+  font-size: 13px;
+  line-height: 1;
+  margin-top: 10px;
+  color: red;
+}
+.designation {
+  text-transform: capitalize;
+}

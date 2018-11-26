@@ -1,5 +1,7 @@
+/**
+ * import Section
+ */
 import React, { Component } from 'react';
-import Loader from 'react-loader-spinner';
 import Swal from 'sweetalert2';
 import Table from 'rc-table';
 import { withSnackbar } from 'notistack';
@@ -8,20 +10,26 @@ import { httpGet, httpDelete } from '../../../services/https';
 import { getUserDataFromLocalStorage, convertFormattedDate } from '../../../services/helper';
 import MESSAGES from '../../../services/messages';
 import '../style.css';
-
-// Components
 import Sidebar from '../sidebar';
 import Topbar from '../topbar';
+import Loader from '../../../Loader/loader'
 
-
+/**
+ * Class Declaration
+ */
 class AdminDrivers extends Component {
-
 	user = {};
-
+	/**
+	 * state
+	 */
 	state = {
-		drivers: []
+		drivers: [],
+		isRequesting: false
 	};
 
+	/**
+	 * Column
+	 */
 	columns = [
 		{ title: 'Avatar', dataIndex: 'picture', key:'picture', width: 20, render: (val)=> <img src={val} /> },
 		{ title: 'Name', dataIndex: 'name', key:'name', width: 1000 }, 
@@ -33,17 +41,24 @@ class AdminDrivers extends Component {
 		}
 	];
 
+	/**
+	 * When Component Did Mount
+	 */
 	componentDidMount() {
+		this.setState({
+			isRequesting: true
+		})
 		httpGet('/user/drivers').then((success)=> {
 			success.data.forEach(function(element, key) {
 			  	element.key = key;
 			  	element.name = element.user_metadata.first_name + ' ' + element.user_metadata.last_name;
 			});
 			this.setState({
-				drivers: success.data
+				drivers: success.data,
+				isRequesting: false
 			});
 		}, (err) => {
-
+			this.handleErrorMessage(err);
 		});
 	}
 
@@ -54,7 +69,6 @@ class AdminDrivers extends Component {
 	}
 
 	openDeletePopUp(id) {
-		console.log(this.state.drivers);
 		Swal({
 		  	title: 'Are you sure?',
 		  	text: 'You will not be able to recover this driver anymore!',
@@ -64,27 +78,26 @@ class AdminDrivers extends Component {
 		  	cancelButtonText: 'No, keep it'
 		}).then((result) => {
 			if (result.value) {
+				this.setState({
+					isRequesting: true
+				})
 				httpDelete('/user/delete/' + id).then((res)=> {
 					for (var i=0; i < this.state.drivers.length; i++) {
-				        if(this.state.drivers[i].user_id === id) {
-				        	this.state.drivers.splice(i, 1);
-				        	break;
-				        };
-				    };
-				    this.setState({
-				    	drivers: this.state.drivers
-				    });
-
-				    this.props.enqueueSnackbar(MESSAGES.DRIVER_DELETED, {
-					    variant: 'success',
-					    autoHideDuration: 3000
+						if(this.state.drivers[i].user_id === id) {
+							this.state.drivers.splice(i, 1);
+							break;
+						};
+					};
+					this.setState({
+						drivers: this.state.drivers,
+						isRequesting: false
+					});
+					this.props.enqueueSnackbar(MESSAGES.DRIVER_DELETED, {
+						variant: 'success',
+						autoHideDuration: 3000
 					});
 				}, (err) => {
-					console.log(err);
-				    this.props.enqueueSnackbar(MESSAGES.SOMETHING_WENT_WRONG, {
-					    variant: 'error',
-					    autoHideDuration: 3000
-					});
+					this.handleErrorMessage(err);
 				});
 			}
 		});
@@ -97,6 +110,29 @@ class AdminDrivers extends Component {
 	gotoRoute(route) {
 		this.props.history.push(route);
 	}
+
+
+	/**
+	 * handle error message
+	 */
+	handleErrorMessage(err) {
+		if (err.errors && err.errors.message) {
+			this.props.enqueueSnackbar(err.errors.message, {
+				variant: 'error',
+				autoHideDuration: 3000
+			});
+		}
+		if (err.errors && !err.errors.message) {
+			this.props.enqueueSnackbar(err.errors, {
+				variant: 'error',
+				autoHideDuration: 3000
+			});
+		}	
+		this.setState({
+			isRequesting: false
+		})
+	}
+
 
 	render() {
 		const { user } = this.user;
@@ -113,7 +149,8 @@ class AdminDrivers extends Component {
 				<div className="container-fluid page-body-wrapper">
 					{/* partial:partials/_sidebar.html */}
 					<Sidebar user={user} />
-
+					{this.state.isRequesting ?
+						<Loader isLoader={this.state.isRequesting} /> :
 					<div className="main-panel">
 						<div className="content-wrapper">
 							<div className="row">
@@ -140,11 +177,11 @@ class AdminDrivers extends Component {
 						<footer className="footer">
 							<div className="container-fluid clearfix">
 								<span className="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © 2018
-									<a href="http://www.bootstrapdash.com/" target="_blank">Bootstrapdash</a>. All rights reserved.
+									{/* <a href="http://www.bootstrapdash.com/" target="_blank">Bootstrapdash</a>. All rights reserved. */}
 								</span>
 							</div>
 						</footer>
-					</div>
+					</div>}
 				</div>
 			</div>
 		);

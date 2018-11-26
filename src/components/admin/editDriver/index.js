@@ -1,56 +1,74 @@
+/**
+ * Import Section
+ */
 import React, { Component } from 'react';
-import Loader from 'react-loader-spinner';
-import Swal from 'sweetalert2';
-import Table from 'rc-table';
 import { withRouter } from "react-router";
 import { withSnackbar } from 'notistack';
 import { httpPatch, httpGet } from '../../../services/https';
-import { getUserDataFromLocalStorage, convertFormattedDate } from '../../../services/helper';
-import MESSAGES from '../../../services/messages';
+import { getUserDataFromLocalStorage} from '../../../services/helper';
 import '../style.css';
+
 
 // Components
 import Sidebar from '../sidebar';
+import Loader from '../../../Loader/loader'
 import Topbar from '../topbar';
 
-
+/**
+ * Class Declaration
+ */
 class AdminEditDriver extends Component {
-
+	/**
+	 * state
+	 */
 	state = {
 		isSubmitEditDriver: false,
 		firstName: '',
 		lastName: '',
+		isRequesting: false,
 		error: {
 			isFirstNameRequired: false,
 			isLastNameRequired: false,
 		}
 	};
 
+	/**
+	 * When Component did monunt
+	 */
 	componentDidMount() {
+		this.setState({
+			isRequesting: true
+		})
 		var id = this.props.match.params.id;
 		httpGet('/user/profile/' + id).then((success)=> {
 			var userMeta = success.data.user_metadata;
 			this.setState({
 				firstName: userMeta.first_name,
 				lastName: userMeta.last_name,
+				isRequesting: false
 			});
-		}, (err) => {});
+		}, (err) => {
+			this.handleErrorMessage(err);
+		});
 	}
 
-    /* Constructor */
+  /* Constructor */
 	constructor(props) {
-	    super(props);
-	    this.user = getUserDataFromLocalStorage();
+	  super(props);
+	  this.user = getUserDataFromLocalStorage();
 	}
 
+	/**
+	 * Edit Driver
+	 */
 	editDriver() {
 		if(this.state.isSubmitEditDriver) {
 			return;
 		}
 		this.setState({
-			isSubmitEditDriver: true
+			isSubmitEditDriver: true,
+			isRequesting: true
 		});
-
 		var checkFormValidation = this.checkAddDriverValidation();
 		var id = this.props.match.params.id;
 		if(checkFormValidation) {
@@ -60,10 +78,12 @@ class AdminEditDriver extends Component {
 			}
 			httpPatch('/user/update/' + id, data).then((success)=> {
 				this.setState({
-					isSubmitEditDriver: false
+					isSubmitEditDriver: false,
+					isRequesting: false
 				});
 				this.props.history.push('/admin/drivers');
 			}, (err) => {
+				this.handleErrorMessage(err);
 				this.setState({
 					isSubmitEditDriver: false
 				});
@@ -74,7 +94,10 @@ class AdminEditDriver extends Component {
 			});
 		}
 	}
-
+	
+	/**
+	 * Validation
+	 */
 	checkAddDriverValidation() {
 		if(this.state.firstName === '' || this.state.firstName === null || this.state.firstName.length < 1) {
 			this.setState({
@@ -106,6 +129,36 @@ class AdminEditDriver extends Component {
 		return true;
 	}
 
+	/**
+	 * handle error message
+	 */
+	handleErrorMessage(err) {
+		if (Array.isArray(err.errors)) {
+			this.props.enqueueSnackbar(err.errors[0].params + ' is required', {
+				variant: 'error',
+				autoHideDuration: 3000
+			});
+		}
+		if (!Array.isArray(err.errors) && err.errors && err.errors.message) {
+			this.props.enqueueSnackbar(err.errors.message, {
+				variant: 'error',
+				autoHideDuration: 3000
+			});
+		}
+		if (!Array.isArray(err.errors) && err.errors && !err.errors.message) {
+			this.props.enqueueSnackbar(err.errors, {
+				variant: 'error',
+				autoHideDuration: 3000
+			});
+		}
+		this.setState({
+			isRequesting: false
+		});
+	}
+
+	/**
+	 * Render HTML
+	 */
 	render() {
 		const { user } = this.user;
 		const { isSubmitEditDriver } = this.state;
@@ -121,7 +174,9 @@ class AdminEditDriver extends Component {
 				<div className="container-fluid page-body-wrapper">
 					{/* partial:partials/_sidebar.html */}
 					<Sidebar user={user} />
-
+					{
+						this.state.isRequesting ?
+							<Loader isLoader={this.state.isRequesting} /> : 
 					<div className="main-panel">
 						<div className="content-wrapper">
 							<div className="row justify-content-center">
@@ -189,15 +244,17 @@ class AdminEditDriver extends Component {
 						<footer className="footer">
 							<div className="container-fluid clearfix">
 								<span className="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © 2018
-									<a href="http://www.bootstrapdash.com/" target="_blank">Bootstrapdash</a>. All rights reserved.
+									{/* <a href="http://www.bootstrapdash.com/" target="_blank">Bootstrapdash</a>. All rights reserved. */}
 								</span>
 							</div>
 						</footer>
-					</div>
+					</div>}
 				</div>
 			</div>
 		);
 	}
 }
-
+/**
+ * Export Section
+ */
 export default withSnackbar(withRouter(AdminEditDriver));

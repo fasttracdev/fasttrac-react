@@ -4,14 +4,14 @@
 import React, { Component } from 'react';
 import Auth from '../../../services/auth';
 import { withRouter } from "react-router";
-
+import Environment from '../../../environment/env'
 const auth = new Auth();
 
 /**
  * Class declaration
  */
 class Topbar extends Component {
-
+	_env = new Environment();
 	isActiveDropDown = false;
 
 	/**
@@ -45,10 +45,10 @@ class Topbar extends Component {
 			<nav className="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
 			    <div className="text-center navbar-brand-wrapper d-flex align-items-top justify-content-center">
 			        <a className="navbar-brand brand-logo sidebar-link" onClick={() => { this.gotoRoute('/admin/dashboard') }}>
-			        <img src="/images/logo.png" alt="logo" />
+						<img src={this._env.getENV().ImagePath + "/images/logo.png"} alt="logo" />
 			        </a>
 			        <a className="navbar-brand brand-logo-mini sidebar-link" onClick={() => { this.gotoRoute('/admin/dashboard') }}>
-			        <img src="/images/logo.png" alt="logo" />
+						<img src={this._env.getENV().ImagePath + "/images/logo.png"} alt="logo" />
 			        </a>
 			    </div>
 			    <div className="navbar-menu-wrapper d-flex align-items-center">				   

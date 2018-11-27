@@ -6,6 +6,9 @@ import { getUserDataFromLocalStorage } from '../../../services/helper';
 import '../style.css';
 import Sidebar from '../sidebar';
 import Topbar from '../topbar';
+import { httpGet } from '../../../services/https';
+import Loader from '../../../Loader/loader'
+
 /**
  * Class declaration
  */
@@ -16,7 +19,42 @@ class DashBoard extends Component {
   /* Constructor */
 	constructor(props) {
 	  super(props);
-	  this.user = getUserDataFromLocalStorage();
+		this.user = getUserDataFromLocalStorage();
+	}
+	
+	componentDidMount() {
+		this.getDashboardContent();
+	}
+
+	/**
+	 * state
+	 */
+	state = {
+		driver_count: 0,
+		isRequesting: false
+	}
+
+	/**
+   * Get Drivers List
+   */
+	getDashboardContent() {
+		this.setState({
+			isRequesting: true
+		})
+		let url = '/dashboard/driver-count' 
+		httpGet(url).then((success) => {
+			if (success.data.length > 0) {
+				this.setState({
+					isRequesting: false,
+					driver_count: success.data[0].driver_count
+				})
+				return
+			} 
+		}, (err) => {
+			this.setState({
+				isRequesting: false
+			})
+		});
 	}
 
 	/**
@@ -32,6 +70,9 @@ class DashBoard extends Component {
 				<div className="container-fluid page-body-wrapper">
 					{/* partial:partials/_sidebar.html */}
 					<Sidebar user={user} />
+					{
+						this.state.isRequesting ?
+							<Loader isLoader={this.state.isRequesting} /> : 
 					<div className="main-panel">
 						<div className="content-wrapper">
 							<div className="row">						       
@@ -45,7 +86,7 @@ class DashBoard extends Component {
 						                <div className="float-right">
 						                  <p className="mb-0 text-right">Drivers</p>
 						                  <div className="fluid-container">
-						                    <h3 className="font-weight-medium text-right mb-0">24</h3>
+						                    <h3 className="font-weight-medium text-right mb-0">{this.state.driver_count}</h3>
 						                  </div>
 						                </div>
 						              </div>
@@ -65,7 +106,7 @@ class DashBoard extends Component {
 								{/* </span> */}
 							</div>
 						</footer>
-					</div>
+					</div>}
 				</div>
 			</div>
 		);

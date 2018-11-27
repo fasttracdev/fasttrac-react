@@ -33,7 +33,14 @@ let baseConfig = {
         test: /\.css$/,
         loader: 'style-loader!css-loader'
       },
-      { test: /\.(png|jpg|jpeg|gif|woff|svg)$/, use: 'url-loader?limit=8192' },
+      {
+        test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+        loader: require.resolve('url-loader'),
+        options: {
+          limit: 10000,
+          name: 'static/media/[name].[hash:8].[ext]',
+        },
+      },
       {
         test: /\.html$/,
         loader: 'html-loader'

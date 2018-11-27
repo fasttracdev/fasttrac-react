@@ -29,7 +29,7 @@ class Home extends Component {
 								<div className="col-lg-4 mx-auto">
 									<div className="auto-form-wrapper">
 										<div className="auth0-logo">
-											<img src="../../src/images/auth0-logo-blue.png" alt="auth0-logo"/>
+											<img src="/images/auth0-logo-blue.png" alt="auth0-logo"/>
 										</div>
 										<div className="form-group">
 											<button className="btn btn-primary submit-btn btn-block" onClick={() => this.login()}>Login</button>

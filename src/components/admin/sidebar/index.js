@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withRouter } from "react-router";
-import { getUserDataFromLocalStorage } from '../../../services/helper';
 
 class Sidebar extends Component {
 
@@ -18,7 +17,7 @@ class Sidebar extends Component {
 		return (
 			<nav className="sidebar sidebar-offcanvas" id="sidebar">
 				<ul className="nav">
-					<li className="nav-item nav-profile">
+					<li className="nav-item nav-profile sidebar-link" onClick={() => { this.gotoRoute('/admin/dashboard') }}>
 						<div className="nav-link">
 							<div className="user-wrapper">
 								<div className="profile-image">
@@ -34,13 +33,13 @@ class Sidebar extends Component {
 							</div>
 						</div>
 					</li>
-					<li className={(location.pathname === '/admin/dashboard') ? 'nav-item active' : 'nav-item' }>
+					<li className={(location.pathname === '/admin/dashboard') ? 'nav-item active sidebar-link' : 'nav-item sidebar-link' }>
 						<a className="nav-link" onClick={() => {this.gotoRoute('/admin/dashboard')}} >
 							<i className="menu-icon mdi mdi-television" />
 							<span className="menu-title">Dashboard</span>
 						</a>
 					</li>
-					<li className={(location.pathname === '/admin/drivers') ? 'nav-item active' : 'nav-item' }>
+					<li className={(location.pathname === '/admin/drivers') ? 'nav-item active sidebar-link' : 'nav-item sidebar-link' }>
 						<a className="nav-link" onClick={() => {this.gotoRoute('/admin/drivers')}} >
 							<i className="menu-icon mdi mdi-ship-wheel" />
 							<span className="menu-title">Drivers</span>

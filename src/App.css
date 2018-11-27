@@ -183,3 +183,6 @@
 .designation {
   text-transform: capitalize;
 }
+.sidebar-link {
+  cursor: pointer;
+}

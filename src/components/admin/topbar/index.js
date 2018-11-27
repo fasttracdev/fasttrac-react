@@ -33,7 +33,7 @@ class Topbar extends Component {
 			        </a>
 			    </div>
 			    <div className="navbar-menu-wrapper d-flex align-items-center">
-				    <ul className="navbar-nav navbar-nav-left header-links d-none d-md-flex">
+				    {/* <ul className="navbar-nav navbar-nav-left header-links d-none d-md-flex">
 				        <li className="nav-item">
 				            <a href="#" className="nav-link">Schedule
 				            <span className="badge badge-primary ml-1">New</span>
@@ -47,8 +47,8 @@ class Topbar extends Component {
 				            <a href="#" className="nav-link">
 				            <i className="mdi mdi-bookmark-plus-outline" />Score</a>
 				        </li>
-				    </ul>
-				    <ul className="navbar-nav navbar-nav-right">
+				    </ul> */}
+				    {/* <ul className="navbar-nav navbar-nav-right">
 				        <li className="nav-item dropdown">
 				            <a className="nav-link count-indicator dropdown-toggle" id="messageDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
 				            <i className="mdi mdi-file-document-box" />
@@ -103,8 +103,8 @@ class Topbar extends Component {
 				                    </div>
 				                </a>
 				            </div>
-				        </li>
-				        <li className="nav-item dropdown">
+				        </li> */}
+				        {/* <li className="nav-item dropdown">
 				            <a className="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-toggle="dropdown">
 				            <i className="mdi mdi-bell" />
 				            <span className="count">4</span>
@@ -158,7 +158,8 @@ class Topbar extends Component {
 				                        </div>
 				                    </a>
 				                </div>
-				        </li>
+						</li> */}
+					<ul className="navbar-nav navbar-nav-right">
 					        <li className={ !this.isActiveDropDown ? "nav-item dropdown d-none d-xl-inline-block" : "nav-item dropdown d-none d-xl-inline-block show"}>
 					        <a className="nav-link dropdown-toggle" id="UserDropdown" onClick={() => { this.openCloseDropDown(); }} href="#" data-toggle="dropdown" aria-expanded="false">
 					        <span className="profile-text">Hello, {user.user_metadata.first_name + ' ' + user.user_metadata.last_name} !</span>

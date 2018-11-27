@@ -27,7 +27,7 @@ class Sidebar extends Component {
 								<div className="text-wrapper">
 									<p className="profile-name">{user.user_metadata.first_name + ' ' + user.user_metadata.last_name}</p>
 									<div>
-										<small className="designation text-muted">Manager</small>
+										<small className="designation text-muted">{user.user_metadata.role}</small>
 										<span className="status-indicator online" />
 									</div>
 								</div>

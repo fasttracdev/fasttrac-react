@@ -220,9 +220,6 @@ class SearchDriver extends Component {
                                           </span>
                                         </span>
                                       ) : null}
-                                     
-                                    </div>
-                                    <div className="list-info-other col-sm-6">
                                       {driver.postal_code ? (
                                         <span>
                                           <span className="info-label">Zip: </span>{' '}
@@ -231,7 +228,17 @@ class SearchDriver extends Component {
                                           </span>
                                         </span>
                                       ) : null}
-                                      
+                                     
+                                    </div>
+                                    <div className="list-info-other col-sm-6">
+                                      {driver.ref_id ? (
+                                        <span>
+                                          <span className="info-label">Driver Id: </span>{' '}
+                                          <span className="info-txt">
+                                            {driver.ref_id}
+                                          </span>
+                                        </span>
+                                      ) : null}
                                       {driver.email ? (
                                         <span>
                                           <span className="info-label">Email:</span>{' '}

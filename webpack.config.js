@@ -34,7 +34,7 @@ let baseConfig = {
         loader: 'style-loader!css-loader'
       },
       {
-        test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+        test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.woff$/,/\.svg$/],
         loader: require.resolve('url-loader'),
         options: {
           limit: 10000,

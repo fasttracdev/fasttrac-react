@@ -3,11 +3,13 @@
  */
 import React, { Component } from 'react';
 import Auth from '../../services/auth.js';
+import Environment from '../../environment/env' 
 const auth = new Auth();
 /**
  * Calss
  */
 class Home extends Component {
+	_env = new Environment();
 
 	/**
 	 * Login 
@@ -29,7 +31,7 @@ class Home extends Component {
 								<div className="col-lg-4 mx-auto">
 									<div className="auto-form-wrapper">
 										<div className="auth0-logo">
-											<img src="/images/auth0-logo-blue.png" alt="auth0-logo"/>
+											<img src={this._env.getENV().ImagePath + "/images/auth0-logo-blue.png" } alt="auth0-logo"/>
 										</div>
 										<div className="form-group">
 											<button className="btn btn-primary submit-btn btn-block" onClick={() => this.login()}>Login</button>

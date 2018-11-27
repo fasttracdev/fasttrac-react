@@ -186,3 +186,6 @@
 .sidebar-link {
   cursor: pointer;
 }
+.link-space {
+  padding: 10px 0 !important;
+}

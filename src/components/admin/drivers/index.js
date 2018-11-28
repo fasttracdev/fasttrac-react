@@ -37,7 +37,7 @@ class AdminDrivers extends Component {
 	columns = [
 		{ title: 'Avatar', dataIndex: 'picture', key:'picture', width: 20, render: (val)=> <img src={val} /> },
 		{ title: 'Name', dataIndex: 'name', key: 'name', width: 1000 }, 
-		{ title: 'Id', dataIndex: 'driver_id', key:'driver_id', width: 800 }, 
+		{ title: 'Driver Id', dataIndex: 'driver_id', key:'driver_id', width: 800 }, 
 		{ title: 'Email', dataIndex: 'email', key:'email', width: 1000 },
 		{ title: 'Account Status', dataIndex: 'email_verified', key:'email_verified', width: 1000, render: (val)=> <div>{(val) ? 'Verified' : 'Not Verified'}</div> },
 		{ title: 'Created At', dataIndex: 'created_at', key:'created_at', width: 1000, render: (val)=> <div>{ convertFormattedDate(val) }</div> },

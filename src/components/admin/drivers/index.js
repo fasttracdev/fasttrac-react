@@ -13,6 +13,7 @@ import '../style.css';
 import Sidebar from '../sidebar';
 import Topbar from '../topbar';
 import Loader from '../../../Loader/loader'
+import ReactPaginate from 'react-paginate'
 
 /**
  * Class Declaration
@@ -24,7 +25,10 @@ class AdminDrivers extends Component {
 	 */
 	state = {
 		drivers: [],
-		isRequesting: false
+		isRequesting: false,
+		total_pages: 0,
+		page: 1,
+		limit:10
 	};
 
 	/**
@@ -32,7 +36,8 @@ class AdminDrivers extends Component {
 	 */
 	columns = [
 		{ title: 'Avatar', dataIndex: 'picture', key:'picture', width: 20, render: (val)=> <img src={val} /> },
-		{ title: 'Name', dataIndex: 'name', key:'name', width: 1000 }, 
+		{ title: 'Name', dataIndex: 'name', key: 'name', width: 1000 }, 
+		{ title: 'Id', dataIndex: 'driver_id', key:'driver_id', width: 800 }, 
 		{ title: 'Email', dataIndex: 'email', key:'email', width: 1000 },
 		{ title: 'Account Status', dataIndex: 'email_verified', key:'email_verified', width: 1000, render: (val)=> <div>{(val) ? 'Verified' : 'Not Verified'}</div> },
 		{ title: 'Created At', dataIndex: 'created_at', key:'created_at', width: 1000, render: (val)=> <div>{ convertFormattedDate(val) }</div> },
@@ -45,16 +50,28 @@ class AdminDrivers extends Component {
 	 * When Component Did Mount
 	 */
 	componentDidMount() {
+		this.getDrivers();
+	}
+
+	/**
+	 * get Drivers
+	 */
+	getDrivers() {
 		this.setState({
 			isRequesting: true
 		})
-		httpGet('/user/drivers').then((success)=> {
-			success.data.forEach(function(element, key) {
-			  	element.key = key;
-			  	element.name = element.user_metadata.first_name + ' ' + element.user_metadata.last_name;
+		var url = '/user/drivers?'
+		url+='limit=' + this.state.limit
+		url+='&page=' + this.state.page 
+		httpGet(url).then((success) => {
+			success.data.forEach(function (element, key) {
+				element.key = key;
+				element.name = element.user_metadata.first_name + ' ' + element.user_metadata.last_name;
+				element.driver_id = element.user_metadata.driver_id ? element.user_metadata.driver_id : 0;
 			});
 			this.setState({
 				drivers: success.data,
+				total_pages: success.meta.pagination.total_pages,
 				isRequesting: false
 			});
 		}, (err) => {
@@ -64,8 +81,8 @@ class AdminDrivers extends Component {
 
     /* Constructor */
 	constructor(props) {
-	    super(props);
-	    this.user = getUserDataFromLocalStorage();
+	  super(props);
+	  this.user = getUserDataFromLocalStorage();
 	}
 
 	openDeletePopUp(id) {
@@ -133,6 +150,18 @@ class AdminDrivers extends Component {
 		})
 	}
 
+	/**
+   * handle pagination
+   * @param  p
+   */
+	handlePagination(p) {
+		console.log(p);
+		var page = p.selected + 1
+		if (page === this.state.page) return
+		this.setState({ page: page }, () => {
+			this.getDrivers()
+		})
+	}
 
 	render() {
 		const { user } = this.user;
@@ -167,8 +196,26 @@ class AdminDrivers extends Component {
 								            		<Table columns={this.columns} className="table table-bordered" data={this.state.drivers} />
 								            	}
 								            </div>
-								        </div>
-							        </div>
+														{
+															this.state.drivers.length > 0 ?
+															<div className="pagination-wrapper mt-3 mb-3 ml-3">
+																<ReactPaginate previousLabel={"<"}
+																	nextLabel={">"}
+																	breakClassName={"break-me"}
+																	pageCount={this.state.total_pages}
+																	marginPagesDisplayed={2}
+																	pageRangeDisplayed={10}
+																	breakLabel={"..."}
+																	onPageChange={e => this.handlePagination(e)}
+																	containerClassName={"pagination"}
+																	activeClassName={'active'}
+																	subContainerClassName={"pages pagination"}
+																	initialPage={this.state.page - 1}
+																	/>
+															</div>: null
+														}
+								      </div>
+							      </div>
 							    </div>
 							</div>
 						</div>

@@ -189,3 +189,52 @@
 .link-space {
   padding: 10px 0 !important;
 }
+
+.pagination-wrapper {
+  float: right;
+  margin-bottom: 10px;
+
+}
+.pagination-wrapper .pagination {
+  margin-bottom: 0;
+}
+.pagination-wrapper .pagination li a {
+  display: block;
+  height: 32px;
+  line-height: 30px;
+  padding: 0 12px;
+  color: #333 !important;
+  text-decoration: none;
+  font-size: 15px;
+  border: 1px solid #eee;
+  border-left-width: 0;
+}
+.pagination-wrapper .pagination li a:hover {
+  color: #fff !important;
+  background-color: #308ee0;
+  cursor: pointer;
+}
+.pagination-wrapper .pagination li a:focus {
+  outline: 0;
+}
+.pagination-wrapper .pagination li.previous a i, .pagination-wrapper .pagination li.next a i {
+  line-height: 31px;
+}
+.pagination-wrapper .pagination li.disabled a {
+  color: #999 !important;
+  opacity: 0.8;
+  cursor: default;
+}
+.pagination-wrapper .pagination li.active a {
+  background-color: #308ee0;
+  color: #fff !important;
+}
+.pagination-wrapper .pagination li:first-child a {
+  border-left-width: 1px;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+.pagination-wrapper .pagination li:last-child a {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}

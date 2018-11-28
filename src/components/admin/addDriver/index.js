@@ -13,6 +13,7 @@ import PhoneNumberFormat from '../../../pipes/phone-formate'
 import Sidebar from '../sidebar';
 import Topbar from '../topbar';
 import Loader from '../../../Loader/loader'
+import MESSAGES from '../../../services/messages';
 
 /**
  * Calss delaration
@@ -77,6 +78,10 @@ class AdminAddDriver extends Component {
 				httpPost('/user/create', data).then((success)=> {
 					this.setState({
 						isSubmitAddDriver: false
+					});
+					this.props.enqueueSnackbar(MESSAGES.DRIVER_ADDED, {
+						variant: 'success',
+						autoHideDuration: 3000
 					});
 					this.props.history.push('/admin/drivers');
 				}, (err) => {

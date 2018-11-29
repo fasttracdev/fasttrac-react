@@ -45,6 +45,12 @@ class Sidebar extends Component {
 							<span className="menu-title">Drivers</span>
 						</a>
 					</li>
+					<li className={(location.pathname === '/admin/drivers-report') ? 'nav-item active sidebar-link' : 'nav-item sidebar-link'}>
+						<a className="nav-link" onClick={() => { this.gotoRoute('/admin/drivers-report') }} >
+							<i className="menu-icon mdi mdi-note" />
+							<span className="menu-title">Drivers Reports</span>
+						</a>
+					</li>
 				</ul>
 			</nav>
 		);

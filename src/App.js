@@ -15,6 +15,7 @@ import Home from './components/home';
 // Admin Components
 import AdminDashboard from './components/admin/dashboard';
 import AdminDrivers from './components/admin/drivers';
+import AdminDriversReports from './components/admin/driverReport';
 import AdminAddDriver from './components/admin/addDriver';
 import AdminEditDriver from './components/admin/editDriver';
 
@@ -65,6 +66,11 @@ class App extends Component {
                 exact
                 path="/admin/drivers/edit/:id"
                 component={AdminEditDriver}
+              />
+              <Route
+                exact
+                path="/admin/drivers-report"
+                component={AdminDriversReports}
               />
             </Switch>
           </Router>

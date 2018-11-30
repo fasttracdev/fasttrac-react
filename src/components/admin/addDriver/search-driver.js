@@ -231,11 +231,11 @@ class SearchDriver extends Component {
                                      
                                     </div>
                                     <div className="list-info-other col-sm-6">
-                                      {driver.ref_id ? (
+                                      {driver.fasttrac_driver_num ? (
                                         <span>
                                           <span className="info-label">Driver Id: </span>{' '}
                                           <span className="info-txt">
-                                            {driver.ref_id}
+                                            {driver.fasttrac_driver_num}
                                           </span>
                                         </span>
                                       ) : null}

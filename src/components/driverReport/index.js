@@ -5,20 +5,18 @@ import React, { Component } from 'react';
 import Table from 'rc-table';
 import { withSnackbar } from 'notistack';
 import { withRouter } from "react-router";
-import { httpGet } from '../../../services/https';
-import { getUserDataFromLocalStorage } from '../../../services/helper';
-import '../style.css';
-import Sidebar from '../sidebar';
-import Topbar from '../topbar';
-import Loader from '../../../Loader/loader'
+import { httpGet } from '../../services/https';
+import { getUserDataFromLocalStorage } from '../../services/helper';
+import '../../components/admin/style.css';
+import Topbar from '../../components/admin/topbar';
+import Loader from '../../Loader/loader'
 import ReactPaginate from 'react-paginate'
 import Modal from 'react-responsive-modal';
-
 
 /**
  * Class Declaration
  */
-class AdminDriversReports extends Component {
+class DriversReports extends Component {
   user = {};
 	/**
 	 * state
@@ -48,7 +46,7 @@ class AdminDriversReports extends Component {
     { title: 'Pu City', dataIndex: 'pu_city', key: 'pu_city', width: 1000 },
     { title: 'Pu State', dataIndex: 'pu_state', key: 'pu_state', width: 1000 },
     { title: 'De City', dataIndex: 'de_city', key: 'de_city', width: 1000 },
-    { title: 'De City', dataIndex: 'de_state', key: 'de_state', width: 1000 },
+    { title: 'De State', dataIndex: 'de_state', key: 'de_state', width: 1000 },
     {
       title: 'Actions', dataIndex: 'id', key: 'operations',
       render: (val) => <div><button type="button" title="Edit" onClick={() => { this.viewReport(val) }} className="btn margin-right10 btn-icons btn-rounded btn-inverse-outline-primary"><i className="mdi mdi-eye"></i></button></div>
@@ -61,7 +59,7 @@ class AdminDriversReports extends Component {
   componentDidMount() {
     this.getDriversReport();
   }
-  
+
   /* Constructor */
   constructor(props) {
     super(props);
@@ -75,12 +73,12 @@ class AdminDriversReports extends Component {
     this.setState({
       isRequesting: true
     })
-    var url = '/fasttrac/drivers-report?'
+    var url = '/fasttrac/driver-report?'
     url += 'limit=' + this.state.limit
     url += '&page=' + this.state.page
     httpGet(url).then((success) => {
       success.data.forEach(function (element, key) {
-        element.key = key;
+        element.key = key;       
       });
       this.setState({
         driversReports: success.data,
@@ -95,7 +93,7 @@ class AdminDriversReports extends Component {
   viewReport(id) {
     var ele = {}
     this.state.driversReports.forEach(function (element, key) {
-      if (element.id === id) {
+      if(element.id === id) {
         ele = element;
       }
     });
@@ -106,7 +104,6 @@ class AdminDriversReports extends Component {
   onCloseModal = () => {
     this.setState({ open: false });
   };
-  
 
 	/**
 	 * handle error message
@@ -144,32 +141,31 @@ class AdminDriversReports extends Component {
   render() {
     const { user } = this.user;
     const { open, report } = this.state;
+
     return (
       <div className="container-scroller">
         <div>
-      
+
         </div>
         {/* partial:partials/_navbar.html */}
         <Topbar user={user} />
-      
+
         {/* partial */}
         <div className="container-fluid page-body-wrapper">
-          {/* partial:partials/_sidebar.html */}
-          <Sidebar user={user} />
           {this.state.isRequesting ?
             <Loader isLoader={this.state.isRequesting} /> :
-            <div className="main-panel">
+            <div className="main-panel report-wrap">
               <div className="content-wrapper">
                 <div className="row">
                   <div className="col-lg-12 grid-margin stretch-card">
                     <div className="card">
                       <div className="card-body">
                         <h2 className="card-title">Drivers Report Listing</h2>
-                          <div className="table-responsive">
+                        <div className="table-responsive">
                           {
                             this.state.driversReports.length > 0 ?
-                            <Table columns={this.columns} className="table table-bordered" data={this.state.driversReports} /> :
-                            "No Record Found!"
+                              <Table columns={this.columns} className="table table-bordered" data={this.state.driversReports} /> :
+                              "No Record Found!"
                           }
                         </div>
                         {
@@ -195,7 +191,7 @@ class AdminDriversReports extends Component {
                   </div>
                 </div>
               </div>
-      
+
               {/* footer */}
               <footer className="footer">
                 <div className="container-fluid clearfix">
@@ -205,67 +201,67 @@ class AdminDriversReports extends Component {
                 </div>
               </footer>
             </div>}
-          <Modal open={open} onClose={this.onCloseModal} center>
-            <div className="row">
-              <div className="col-12 text-center mb-2"> Report </div>
-              <div className="col-6">
-                <div>
-                  <span> Driver Name: </span>
-                  <span>{report.drivername ? report.drivername : '---'}</span>
+            <Modal open={open} onClose={this.onCloseModal} center>
+              <div className="row">
+                <div className="col-12 text-center mb-2"> Report </div>
+                <div className="col-6">
+                  <div>
+                    <span> Driver Name: </span>
+                    <span>{report.drivername ? report.drivername: '---'}</span>
+                  </div>
+                  <div>
+                    <span> Week: </span>
+                    <span>{report.week ? report.week : '---'}</span>
+                  </div>
+                  <div>
+                    <span> Ref: </span>
+                    <span>{report.ref ? report.ref : '---'}</span>
+                  </div>
+                  <div>
+                    <span> Customer: </span>
+                    <span>{report.customer ? report.customer : '---'}</span>
+                  </div>
+                  <div>
+                    <span> Amount Billed: </span>
+                    <span>{report.amount_billed ? report.amount_billed : '---'}</span>
+                  </div>
+                  <div>
+                    <span> Shipper: </span>
+                    <span>{report.shipper ? report.shipper : '---'}</span>
+                  </div>
                 </div>
-                <div>
-                  <span> Week: </span>
-                  <span>{report.week ? report.week : '---'}</span>
-                </div>
-                <div>
-                  <span> Ref: </span>
-                  <span>{report.ref ? report.ref : '---'}</span>
-                </div>
-                <div>
-                  <span> Customer: </span>
-                  <span>{report.customer ? report.customer : '---'}</span>
-                </div>
-                <div>
-                  <span> Amount Billed: </span>
-                  <span>{report.amount_billed ? report.amount_billed : '---'}</span>
-                </div>
-                <div>
-                  <span> Shipper: </span>
-                  <span>{report.shipper ? report.shipper : '---'}</span>
+                <div className="col-6">
+                  <div>
+                    <span> Driver Id: </span>
+                    <span>{report.driver_id ? report.driver_id:'---' }</span>
+                  </div>
+                  <div>
+                    <span> Consignee: </span>
+                    <span>{report.consignee ? report.consignee : '---'}</span>
+                  </div>
+                  <div>
+                    <span> Pu City: </span>
+                    <span>{report.pu_city ? report.pu_city : '---'}</span>
+                  </div>
+                  <div>
+                    <span> Pu State: </span>
+                    <span>{report.pu_state ? report.pu_state : '---'}</span>
+                  </div>
+                  <div>
+                    <span> De City: </span>
+                    <span>{report.de_city ? report.de_city : '---'}</span>
+                  </div>
+                  <div>
+                    <span> De State: </span>
+                    <span>{report.de_state ? report.de_state : '---'}</span>
+                  </div>
                 </div>
               </div>
-              <div className="col-6">
-                <div>
-                  <span> Driver Id: </span>
-                  <span>{report.driver_id ? report.driver_id : '---'}</span>
-                </div>
-                <div>
-                  <span> Consignee: </span>
-                  <span>{report.consignee ? report.consignee : '---'}</span>
-                </div>
-                <div>
-                  <span> Pu City: </span>
-                  <span>{report.pu_city ? report.pu_city : '---'}</span>
-                </div>
-                <div>
-                  <span> Pu State: </span>
-                  <span>{report.pu_state ? report.pu_state : '---'}</span>
-                </div>
-                <div>
-                  <span> De City: </span>
-                  <span>{report.de_city ? report.de_city : '---'}</span>
-                </div>
-                <div>
-                  <span> De State: </span>
-                  <span>{report.de_state ? report.de_state : '---'}</span>
-                </div>
-              </div>
-            </div>
-          </Modal>
+            </Modal>
         </div>
       </div>
     );
   }
 }
 
-export default withSnackbar(withRouter(AdminDriversReports));
+export default withSnackbar(withRouter(DriversReports));

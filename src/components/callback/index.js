@@ -16,7 +16,11 @@ class Callback extends Component {
 			}
 			httpPost('/sso-login/', data).then((success) => {
 				saveUserDataInLocalStorage(success.data);
-				this.props.history.push('/admin/dashboard');
+				if (success.data.user.user_metadata.role === 'admin') {
+					this.props.history.push('/admin/dashboard');
+				}else {
+					this.props.history.push('/driver-report');
+				}
 			}, (err) => {
 				console.log(err);
 			});

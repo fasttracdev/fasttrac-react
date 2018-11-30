@@ -238,3 +238,6 @@
   border-top-right-radius: 3px;
   border-bottom-right-radius: 3px;
 }
+.report-wrap {
+  width:100% !important;
+}

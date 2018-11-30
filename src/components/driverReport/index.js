@@ -12,6 +12,7 @@ import Topbar from '../../components/admin/topbar';
 import Loader from '../../Loader/loader'
 import ReactPaginate from 'react-paginate'
 import Modal from 'react-responsive-modal';
+import Sidebar from '../../components/admin/sidebar';
 
 /**
  * Class Declaration
@@ -35,18 +36,19 @@ class DriversReports extends Component {
 	 * Column
 	 */
   columns = [
-    { title: 'Driver Name', dataIndex: 'drivername', key: 'drivername', width: 1000 },
-    { title: 'Driver Id', dataIndex: 'driver_id', key: 'driver_id', width: 1000 },
+    // { title: 'Driver Name', dataIndex: 'drivername', key: 'drivername', width: 1000 },
+    // { title: 'Driver Id', dataIndex: 'driver_id', key: 'driver_id', width: 1000 },
+    { title: 'S No', dataIndex: 'key', key: 'key', width: 1000 },
     { title: 'Week', dataIndex: 'week', key: 'week', width: 1000 },
     { title: 'Customer', dataIndex: 'customer', key: 'customer', width: 1000 },
     { title: 'Ref', dataIndex: 'ref', key: 'ref', width: 1000 },
     { title: 'Amount Billed', dataIndex: 'amount_billed', key: 'amount_billed', width: 1000 },
-    { title: 'Shipper', dataIndex: 'shipper', key: 'shipper', width: 1000 },
     { title: 'Consignee', dataIndex: 'consignee', key: 'consignee', width: 1000 },
-    { title: 'Pu City', dataIndex: 'pu_city', key: 'pu_city', width: 1000 },
-    { title: 'Pu State', dataIndex: 'pu_state', key: 'pu_state', width: 1000 },
-    { title: 'De City', dataIndex: 'de_city', key: 'de_city', width: 1000 },
-    { title: 'De State', dataIndex: 'de_state', key: 'de_state', width: 1000 },
+    // { title: 'Shipper', dataIndex: 'shipper', key: 'shipper', width: 1000 },
+    // { title: 'Pu City', dataIndex: 'pu_city', key: 'pu_city', width: 1000 },
+    // { title: 'Pu State', dataIndex: 'pu_state', key: 'pu_state', width: 1000 },
+    // { title: 'De City', dataIndex: 'de_city', key: 'de_city', width: 1000 },
+    // { title: 'De State', dataIndex: 'de_state', key: 'de_state', width: 1000 },
     {
       title: 'Actions', dataIndex: 'id', key: 'operations',
       render: (val) => <div><button type="button" title="Edit" onClick={() => { this.viewReport(val) }} className="btn margin-right10 btn-icons btn-rounded btn-inverse-outline-primary"><i className="mdi mdi-eye"></i></button></div>
@@ -78,7 +80,7 @@ class DriversReports extends Component {
     url += '&page=' + this.state.page
     httpGet(url).then((success) => {
       success.data.forEach(function (element, key) {
-        element.key = key;       
+        element.key = key + 1;       
       });
       this.setState({
         driversReports: success.data,
@@ -152,9 +154,10 @@ class DriversReports extends Component {
 
         {/* partial */}
         <div className="container-fluid page-body-wrapper">
+          <Sidebar user={user} />
           {this.state.isRequesting ?
             <Loader isLoader={this.state.isRequesting} /> :
-            <div className="main-panel report-wrap">
+            <div className="main-panel">
               <div className="content-wrapper">
                 <div className="row">
                   <div className="col-lg-12 grid-margin stretch-card">

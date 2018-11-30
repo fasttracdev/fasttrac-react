@@ -43,12 +43,12 @@ class AdminDriversReports extends Component {
     { title: 'Customer', dataIndex: 'customer', key: 'customer', width: 1000 },
     { title: 'Ref', dataIndex: 'ref', key: 'ref', width: 1000 },
     { title: 'Amount Billed', dataIndex: 'amount_billed', key: 'amount_billed', width: 1000 },
-    { title: 'Shipper', dataIndex: 'shipper', key: 'shipper', width: 1000 },
     { title: 'Consignee', dataIndex: 'consignee', key: 'consignee', width: 1000 },
-    { title: 'Pu City', dataIndex: 'pu_city', key: 'pu_city', width: 1000 },
-    { title: 'Pu State', dataIndex: 'pu_state', key: 'pu_state', width: 1000 },
-    { title: 'De City', dataIndex: 'de_city', key: 'de_city', width: 1000 },
-    { title: 'De City', dataIndex: 'de_state', key: 'de_state', width: 1000 },
+    // { title: 'Shipper', dataIndex: 'shipper', key: 'shipper', width: 1000 },
+    // { title: 'Pu City', dataIndex: 'pu_city', key: 'pu_city', width: 1000 },
+    // { title: 'Pu State', dataIndex: 'pu_state', key: 'pu_state', width: 1000 },
+    // { title: 'De City', dataIndex: 'de_city', key: 'de_city', width: 1000 },
+    // { title: 'De City', dataIndex: 'de_state', key: 'de_state', width: 1000 },
     {
       title: 'Actions', dataIndex: 'id', key: 'operations',
       render: (val) => <div><button type="button" title="Edit" onClick={() => { this.viewReport(val) }} className="btn margin-right10 btn-icons btn-rounded btn-inverse-outline-primary"><i className="mdi mdi-eye"></i></button></div>

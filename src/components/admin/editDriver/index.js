@@ -7,6 +7,7 @@ import { withSnackbar } from 'notistack';
 import { httpPatch, httpGet } from '../../../services/https';
 import { getUserDataFromLocalStorage} from '../../../services/helper';
 import '../style.css';
+import MESSAGES from '../../../services/messages';
 
 
 // Components
@@ -61,7 +62,7 @@ class AdminEditDriver extends Component {
 	/**
 	 * Edit Driver
 	 */
-	editDriver() {
+	updateDriver() {
 		if(this.state.isSubmitEditDriver) {
 			return;
 		}
@@ -80,6 +81,10 @@ class AdminEditDriver extends Component {
 				this.setState({
 					isSubmitEditDriver: false,
 					isRequesting: false
+				});
+				this.props.enqueueSnackbar(MESSAGES.DRIVER_UPDATED, {
+					variant: 'success',
+					autoHideDuration: 3000
 				});
 				this.props.history.push('/admin/drivers');
 			}, (err) => {
@@ -221,7 +226,7 @@ class AdminEditDriver extends Component {
 											          	}
 											        </div>
 											        <div className="text-center">
-												        <button type="button" onClick={()=> this.editDriver()} className="btn btn-success mr-2">
+												        <button type="button" onClick={()=> this.updateDriver()} className="btn btn-success mr-2">
 												        	{
 												        		isSubmitEditDriver &&	
 												        		<i className="mdi mdi-spin mdi-loading"></i>

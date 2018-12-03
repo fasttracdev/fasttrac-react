@@ -29,22 +29,38 @@ class Sidebar extends Component {
 										<small className="designation text-muted">{user.user_metadata.role}</small>
 										<span className="status-indicator online" />
 									</div>
+									<div className="mt-2">
+										{user.user_metadata.role !== 'admin' ?
+											<small className="designation text-muted">{'Id: ' + user.user_metadata.driver_id}</small> : null}
+									</div>
 								</div>
 							</div>
 						</div>
 					</li>
-					<li className={(location.pathname === '/admin/dashboard') ? 'nav-item active sidebar-link' : 'nav-item sidebar-link' }>
-						<a className="nav-link" onClick={() => {this.gotoRoute('/admin/dashboard')}} >
-							<i className="menu-icon mdi mdi-television" />
-							<span className="menu-title">Dashboard</span>
-						</a>
-					</li>
-					<li className={(location.pathname === '/admin/drivers') ? 'nav-item active sidebar-link' : 'nav-item sidebar-link' }>
-						<a className="nav-link" onClick={() => {this.gotoRoute('/admin/drivers')}} >
-							<i className="menu-icon mdi mdi-ship-wheel" />
-							<span className="menu-title">Drivers</span>
-						</a>
-					</li>
+					{
+						user.user_metadata.role === 'admin' ?
+						<li className={(location.pathname === '/admin/dashboard') ? 'nav-item active sidebar-link' : 'nav-item sidebar-link' }>
+							<a className="nav-link" onClick={() => {this.gotoRoute('/admin/dashboard')}} >
+								<i className="menu-icon mdi mdi-television" />
+								<span className="menu-title">Dashboard</span>
+							</a>
+						</li>:null}
+						{
+						user.user_metadata.role === 'admin' ?
+						<li className={(location.pathname === '/admin/drivers') ? 'nav-item active sidebar-link' : 'nav-item sidebar-link' }>
+							<a className="nav-link" onClick={() => {this.gotoRoute('/admin/drivers')}} >
+								<i className="menu-icon mdi mdi-ship-wheel" />
+								<span className="menu-title">Drivers</span>
+							</a>
+						</li>:null}
+					{user.user_metadata.role === 'admin' ?
+						<li className={(location.pathname === '/admin/drivers-report') ? 'nav-item active sidebar-link' : 'nav-item sidebar-link'}>
+							<a className="nav-link" onClick={() => { this.gotoRoute('/admin/drivers-report') }} >
+								<i className="menu-icon mdi mdi-note" />
+								<span className="menu-title">Drivers Reports</span>
+							</a>
+						</li> : null
+					}
 				</ul>
 			</nav>
 		);

@@ -13,6 +13,7 @@ import PhoneNumberFormat from '../../../pipes/phone-formate'
 import Sidebar from '../sidebar';
 import Topbar from '../topbar';
 import Loader from '../../../Loader/loader'
+import MESSAGES from '../../../services/messages';
 
 /**
  * Calss delaration
@@ -71,11 +72,16 @@ class AdminAddDriver extends Component {
 					first_name: this.state.firstName,
 					last_name: this.state.lastName,
 					email: this.state.email,
-					role: 'driver'
+					role: 'driver',
+					driver_id: this.state.driver_id
 				}
 				httpPost('/user/create', data).then((success)=> {
 					this.setState({
 						isSubmitAddDriver: false
+					});
+					this.props.enqueueSnackbar(MESSAGES.DRIVER_ADDED, {
+						variant: 'success',
+						autoHideDuration: 3000
 					});
 					this.props.history.push('/admin/drivers');
 				}, (err) => {
@@ -213,7 +219,8 @@ class AdminAddDriver extends Component {
 	 */
 	handleErrorMessage(err) {
 		if(Array.isArray(err.errors)) {
-			this.props.enqueueSnackbar('Name is required', {
+			var error = err.errors[0].msg ? err.errors[0].msg : err.errors[0].message
+			this.props.enqueueSnackbar(error, {
 				variant: 'error',
 				autoHideDuration: 3000
 			});

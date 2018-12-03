@@ -5,7 +5,9 @@ const MESSAGES = {
   /**
    * Success Messages
    */
-  DRIVER_DELETED: 'Driver delete successfully',
+  DRIVER_DELETED: 'Driver deleted successfully',
+  DRIVER_ADDED: 'Driver added successfully',
+  DRIVER_UPDATED: 'Driver updated successfully',
 
   /**
    * Validation Messages

@@ -37,7 +37,7 @@ export const getUserDataFromLocalStorage = () => {
 export const convertFormattedDate = (date) => {
  	if(!date) {
  		return;
- 	}
- 	var convertedDate = moment(date.created_at);
- 	return convertedDate.format(dateFormat);
+	 }
+	var convertedDate = moment(date).format(dateFormat)
+ 	return convertedDate;
 }

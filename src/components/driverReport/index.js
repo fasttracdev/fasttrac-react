@@ -13,11 +13,15 @@ import Loader from '../../Loader/loader'
 import ReactPaginate from 'react-paginate'
 import Modal from 'react-responsive-modal';
 import Sidebar from '../../components/admin/sidebar';
+import ENV from '../../environment/env'
+
+var numeral = require('numeral');
 
 /**
  * Class Declaration
  */
 class DriversReports extends Component {
+  _env = new ENV()
   user = {};
 	/**
 	 * state
@@ -80,7 +84,8 @@ class DriversReports extends Component {
     url += '&page=' + this.state.page
     httpGet(url).then((success) => {
       success.data.forEach(function (element, key) {
-        element.key = key + 1;       
+        element.key = key + 1;  
+        element.amount_billed = numeral(element.amount_billed).format('$0,0.00');     
       });
       this.setState({
         driversReports: success.data,
@@ -140,6 +145,8 @@ class DriversReports extends Component {
     })
   }
 
+  
+
   render() {
     const { user } = this.user;
     const { open, report } = this.state;
@@ -163,7 +170,9 @@ class DriversReports extends Component {
                   <div className="col-lg-12 grid-margin stretch-card">
                     <div className="card">
                       <div className="card-body">
-                        <h2 className="card-title">Drivers Report Listing</h2>
+                        <h2 className="card-title">
+                          <span>Driver Report Listing</span>
+                        </h2>
                         <div className="table-responsive">
                           {
                             this.state.driversReports.length > 0 ?

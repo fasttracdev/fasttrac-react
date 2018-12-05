@@ -40,7 +40,7 @@ class AdminDrivers extends Component {
 		{ title: 'Driver Id', dataIndex: 'driver_id', key:'driver_id', width: 800 }, 
 		{ title: 'Email', dataIndex: 'email', key:'email', width: 1000 },
 		{ title: 'Account Status', dataIndex: 'email_verified', key:'email_verified', width: 1000, render: (val)=> <div>{(val) ? 'Verified' : 'Not Verified'}</div> },
-		{ title: 'Created At', dataIndex: 'created_at', key:'created_at', width: 1000, render: (val)=> <div>{ convertFormattedDate(val) }</div> },
+		{ title: 'Created At', dataIndex: 'created_at', key:'created_at', width: 1000},
 		{ title: 'Actions', dataIndex: 'user_id', key:'operations', 
 			render: (val) => <div><button type="button" title="Edit" onClick={()=> { this.editDriver(val) }} className="btn margin-right10 btn-icons btn-rounded btn-inverse-outline-primary"><i className="mdi mdi-account-edit"></i></button><button title="Delete" type="button" onClick={() => {this.openDeletePopUp(val)}} className="btn btn-icons btn-rounded btn-inverse-outline-primary"><i className="mdi mdi-delete"></i></button></div>
 		}
@@ -65,6 +65,7 @@ class AdminDrivers extends Component {
 		url+='&page=' + this.state.page 
 		httpGet(url).then((success) => {
 			success.data.forEach(function (element, key) {
+				element.created_at = convertFormattedDate(element.created_at);
 				element.key = key;
 				element.name = element.user_metadata.first_name + ' ' + element.user_metadata.last_name;
 				element.driver_id = element.user_metadata.driver_id ? element.user_metadata.driver_id : 0;
@@ -105,9 +106,18 @@ class AdminDrivers extends Component {
 							break;
 						};
 					};
+
+					if(res.data.length <= 0) {
+						this.setState({
+							page: Number(this.state.page) - 1
+						})
+					}
+
 					this.setState({
 						drivers: this.state.drivers,
 						isRequesting: false
+					}, () => {
+						this.getDrivers()
 					});
 					this.props.enqueueSnackbar(MESSAGES.DRIVER_DELETED, {
 						variant: 'success',
@@ -155,7 +165,6 @@ class AdminDrivers extends Component {
    * @param  p
    */
 	handlePagination(p) {
-		console.log(p);
 		var page = p.selected + 1
 		if (page === this.state.page) return
 		this.setState({ page: page }, () => {

@@ -73,7 +73,10 @@ class AdminAddDriver extends Component {
 					last_name: this.state.lastName,
 					email: this.state.email,
 					role: 'driver',
-					driver_id: this.state.driver_id
+					driver_id: this.state.driver_id,
+					address: this.state.address,
+					city: this.state.city,
+					phone: this.state.phone
 				}
 				httpPost('/user/create', data).then((success)=> {
 					this.setState({

@@ -8,6 +8,7 @@ import { httpPatch, httpGet } from '../../../services/https';
 import { getUserDataFromLocalStorage} from '../../../services/helper';
 import '../style.css';
 import MESSAGES from '../../../services/messages';
+import validator from 'validator';
 
 
 // Components
@@ -26,10 +27,16 @@ class AdminEditDriver extends Component {
 		isSubmitEditDriver: false,
 		firstName: '',
 		lastName: '',
+		email: '',
+		address: '',
+		city: '',
+		phone: '',
 		isRequesting: false,
 		error: {
 			isFirstNameRequired: false,
 			isLastNameRequired: false,
+			isEmailRequired: false,
+			isValidEmail: false
 		}
 	};
 
@@ -46,6 +53,10 @@ class AdminEditDriver extends Component {
 			this.setState({
 				firstName: userMeta.first_name,
 				lastName: userMeta.last_name,
+				address: userMeta.address,
+				city: userMeta.city,
+				email: success.data.email,
+				phone: userMeta.phone,
 				isRequesting: false
 			});
 		}, (err) => {
@@ -53,10 +64,49 @@ class AdminEditDriver extends Component {
 		});
 	}
 
+	/**
+ * Format Cell Phone
+ *
+ * @param {String} phone
+ *
+ * @return {String}
+ */
+	formatPhone(phone) {
+		phone = String(phone)
+		var v = phone.replace(/[^\d]/g, '')
+		v = v.substring(0, 10)
+		var f = ''
+
+		switch (v.length) {
+			case 4:
+			case 5:
+			case 6:
+				f = v.replace(/(\d{3})/, '($1) ')
+				break
+
+			case 7:
+			case 8:
+			case 9:
+				f = v.replace(/(\d{3})(\d{3})/, '($1) $2-')
+				break
+
+			default:
+				f = v.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3')
+		}
+		return f
+	}
+
   /* Constructor */
 	constructor(props) {
 	  super(props);
 	  this.user = getUserDataFromLocalStorage();
+	}
+
+	/**
+	 *  Cancel Button
+	 */
+	cancel() {
+		this.props.history.push('/admin/drivers');
 	}
 
 	/**
@@ -68,14 +118,20 @@ class AdminEditDriver extends Component {
 		}
 		this.setState({
 			isSubmitEditDriver: true,
-			isRequesting: true
 		});
 		var checkFormValidation = this.checkAddDriverValidation();
 		var id = this.props.match.params.id;
 		if(checkFormValidation) {
+			this.setState({
+				isRequesting: true
+			});
 			var data = {
 				first_name: this.state.firstName,
-				last_name: this.state.lastName
+				last_name: this.state.lastName,
+				email: this.state.email,
+				address: this.state.address,
+				city:this.state.city,
+				phone: this.formatPhone(this.state.phone)
 			}
 			httpPatch('/user/update/' + id, data).then((success)=> {
 				this.setState({
@@ -123,6 +179,30 @@ class AdminEditDriver extends Component {
 			})
 			return false;
 		}
+
+		if (this.state.email === '' || this.state.email === null || this.state.email.length < 1) {
+			this.setState({
+				error: {
+					isNameRequired: false,
+					isLastNameRequired: false,
+					isEmailRequired: true,
+					isValidEmail: false
+				}
+			})
+			return false;
+		}
+
+		if (!validator.isEmail(this.state.email)) {
+			this.setState({
+				error: {
+					isNameRequired: false,
+					isEmailRequired: false,
+					isValidEmail: true
+				}
+			})
+			return false;
+		}
+
 
 		this.setState({
 			error: {
@@ -225,7 +305,93 @@ class AdminEditDriver extends Component {
 											          		<div className="form-error">Last Name is required</div>
 											          	}
 											        </div>
+
+															<div className="form-group">
+																<label htmlFor="exampleInputAddress">Address</label>
+																<input
+																	type="text"
+																	className="form-control"
+																	onChange={e =>
+																		this.setState({
+																			address: e.target.value
+																		})
+																	}
+																	value={
+																		this.state.address
+																			? this.state.address
+																			: ''
+																	}
+																	placeholder="Address" />
+															</div>
+
+															<div className="form-group">
+																<label htmlFor="exampleInputAddress">City</label>
+																<input
+																	type="text"
+																	className="form-control"
+																	onChange={e =>
+																		this.setState({
+																			city: e.target.value
+																		})
+																	}
+																	value={
+																		this.state.city
+																			? this.state.city
+																			: ''
+																	}
+																	placeholder="City" />
+															</div>
+
+															<div className="form-group">
+																<label htmlFor="exampleInputAddress">Phone</label>
+																<input
+																	type="text"
+																	className="form-control"
+																	onChange={e =>
+																		this.setState({
+																			phone: e.target.value
+																		})
+																	}
+																	value={
+																		this.state.phone
+																			? this.formatPhone(this.state.phone)
+																			: ''
+																	}
+																	placeholder="Phone" />
+															</div>
+
+															<div className="form-group">
+																<label htmlFor="exampleInputEmail3">Email address</label>
+																<input
+																	type="email"
+																	className="form-control"
+																	onChange={e =>
+																		this.setState({
+																			email: e.target.value
+																		})
+																	}
+																	id="exampleInputEmail3"
+																	placeholder="Email"
+																	value={
+																		this.state.email
+																			? this.state.email
+																			: ''
+																	}
+																/>
+																{
+																	this.state.error.isEmailRequired &&
+																	<div className="form-error">Email is required</div>
+																}
+																{
+																	this.state.error.isValidEmail &&
+																	<div className="form-error">Please enter a vaild email address</div>
+																}
+															</div>
+
 											        <div className="text-center">
+																<button type="button" onClick={() => this.cancel()} className="btn btn-basic mr-2">
+																	<span>Cancel</span>
+																</button>
 												        <button type="button" onClick={()=> this.updateDriver()} className="btn btn-success mr-2">
 												        	{
 												        		isSubmitEditDriver &&	

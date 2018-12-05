@@ -12,13 +12,16 @@ import Sidebar from '../sidebar';
 import Topbar from '../topbar';
 import Loader from '../../../Loader/loader'
 import ReactPaginate from 'react-paginate'
-import Modal from 'react-responsive-modal';
+import Modal from 'react-responsive-modal'
+import ENV from '../../../environment/env'
+var numeral = require('numeral');
 
 
 /**
  * Class Declaration
  */
 class AdminDriversReports extends Component {
+  _env = new ENV();
   user = {};
 	/**
 	 * state
@@ -28,9 +31,10 @@ class AdminDriversReports extends Component {
     isRequesting: false,
     total_pages: 0,
     page: 1,
-    limit: 30,
+    limit: 10,
     report: {},
     open: false,
+    modalClass: 'modal-report-cont'
   };
 
 	/**
@@ -81,6 +85,7 @@ class AdminDriversReports extends Component {
     httpGet(url).then((success) => {
       success.data.forEach(function (element, key) {
         element.key = key;
+        element.amount_billed = numeral(element.amount_billed).format('$0,0.00');
       });
       this.setState({
         driversReports: success.data,
@@ -140,6 +145,14 @@ class AdminDriversReports extends Component {
       this.getDriversReport()
     })
   }
+  /**
+   * Export Report
+   */
+  exportReport() {
+    var url = this._env.getENV().API_BASE_URL +'/fasttrac/download-drivers-report?'
+    url += 'token=Bearer ' + getUserDataFromLocalStorage().token
+    window.open(url);
+  }
 
   render() {
     const { user } = this.user;
@@ -164,7 +177,10 @@ class AdminDriversReports extends Component {
                   <div className="col-lg-12 grid-margin stretch-card">
                     <div className="card">
                       <div className="card-body">
-                        <h2 className="card-title">Drivers Report Listing</h2>
+                        <h2 className="card-title">
+                          <span>Drivers Report Listing</span>
+                          <button type="button" onClick={() => this.exportReport()} className="btn btn-success mr-2 export-btn">Export</button>
+                        </h2>
                           <div className="table-responsive">
                           {
                             this.state.driversReports.length > 0 ?
@@ -205,61 +221,61 @@ class AdminDriversReports extends Component {
                 </div>
               </footer>
             </div>}
-          <Modal open={open} onClose={this.onCloseModal} center>
-            <div className="row">
-              <div className="col-12 text-center mb-2"> Report </div>
-              <div className="col-6">
-                <div>
-                  <span> Driver Name: </span>
-                  <span>{report.drivername ? report.drivername : '---'}</span>
-                </div>
-                <div>
-                  <span> Week: </span>
-                  <span>{report.week ? report.week : '---'}</span>
-                </div>
-                <div>
-                  <span> Ref: </span>
-                  <span>{report.ref ? report.ref : '---'}</span>
-                </div>
-                <div>
-                  <span> Customer: </span>
-                  <span>{report.customer ? report.customer : '---'}</span>
-                </div>
-                <div>
-                  <span> Amount Billed: </span>
-                  <span>{report.amount_billed ? report.amount_billed : '---'}</span>
-                </div>
-                <div>
-                  <span> Shipper: </span>
-                  <span>{report.shipper ? report.shipper : '---'}</span>
-                </div>
-              </div>
-              <div className="col-6">
-                <div>
-                  <span> Driver Id: </span>
-                  <span>{report.driver_id ? report.driver_id : '---'}</span>
-                </div>
-                <div>
-                  <span> Consignee: </span>
-                  <span>{report.consignee ? report.consignee : '---'}</span>
-                </div>
-                <div>
-                  <span> Pu City: </span>
-                  <span>{report.pu_city ? report.pu_city : '---'}</span>
-                </div>
-                <div>
-                  <span> Pu State: </span>
-                  <span>{report.pu_state ? report.pu_state : '---'}</span>
-                </div>
-                <div>
-                  <span> De City: </span>
-                  <span>{report.de_city ? report.de_city : '---'}</span>
-                </div>
-                <div>
-                  <span> De State: </span>
-                  <span>{report.de_state ? report.de_state : '---'}</span>
-                </div>
-              </div>
+          <Modal open={open} onClose={this.onCloseModal}>
+            <div className="report-modal-wrap">
+              <h3 className="pb-0">Report</h3>
+              <div className="p-3 pb-4">
+                <table className="table report-table">
+                  <tr>
+                    <td>Driver Name</td>
+                    <td>{report.drivername ? report.drivername : '---'}</td>
+                  </tr>
+                  <tr>
+                    <td>Week</td>
+                    <td>{report.week ? report.week : '---'}</td>
+                  </tr>
+                  <tr>
+                    <td>Ref</td>
+                    <td>{report.ref ? report.ref : '---'}</td>
+                  </tr>
+                  <tr>
+                    <td>Customer</td>
+                    <td>{report.customer ? report.customer : '---'}</td>
+                  </tr>
+                  <tr>
+                    <td>Amount Billed</td>
+                    <td>{report.amount_billed ? report.amount_billed : '---'}</td>
+                  </tr>
+                  <tr>
+                    <td>Shipper</td>
+                    <td>{report.shipper ? report.shipper : '---'}</td>
+                  </tr>
+                  <tr>
+                    <td>Driver Id</td>
+                    <td>{report.driver_id ? report.driver_id : '---'}</td>
+                  </tr>
+                  <tr>
+                    <td>Consignee</td>
+                    <td>{report.consignee ? report.consignee : '---'}</td>
+                  </tr>
+                  <tr>
+                    <td>Pu City</td>
+                    <td>{report.pu_city ? report.pu_city : '---'}</td>
+                  </tr>
+                  <tr>
+                    <td>Pu State</td>
+                    <td>{report.pu_state ? report.pu_state : '---'}</td>
+                  </tr>
+                  <tr>
+                    <td>De City</td>
+                    <td>{report.de_city ? report.de_city : '---'}</td>
+                  </tr>
+                  <tr>
+                    <td>De State</td>
+                    <td>{report.de_state ? report.de_state : '---'}</td>
+                  </tr>
+                </table>
+              </div>             
             </div>
           </Modal>
         </div>

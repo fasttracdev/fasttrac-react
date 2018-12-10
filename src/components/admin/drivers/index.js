@@ -14,11 +14,12 @@ import Sidebar from '../sidebar';
 import Topbar from '../topbar';
 import Loader from '../../../Loader/loader'
 import ReactPaginate from 'react-paginate'
-
+import ENV from '../../../environment/env'
 /**
  * Class Declaration
  */
 class AdminDrivers extends Component {
+	_env = new ENV();
 	user = {};
 	/**
 	 * state
@@ -28,7 +29,9 @@ class AdminDrivers extends Component {
 		isRequesting: false,
 		total_pages: 0,
 		page: 1,
-		limit:10
+		limit:10,
+		order: 'desc',
+		field_name: 'id',
 	};
 
 	/**
@@ -36,15 +39,25 @@ class AdminDrivers extends Component {
 	 */
 	columns = [
 		{ title: 'Avatar', dataIndex: 'picture', key:'picture', width: 20, render: (val)=> <img src={val} /> },
-		{ title: 'Name', dataIndex: 'name', key: 'name', width: 1000 }, 
-		{ title: 'Driver Id', dataIndex: 'driver_id', key:'driver_id', width: 800 }, 
-		{ title: 'Email', dataIndex: 'email', key:'email', width: 1000 },
+		{
+			title:<div onClick={() => { this.sortList('first_name') }}>
+							<span>Name </span> <i className="mdi mdi-sort header-icon"></i>
+						</div>, 
+			dataIndex: 'name', key: 'name', width: 1000 }, 
+		{ 	title: <div onClick={() => { this.sortList('driver_id') }}>
+							<span>Driver Id </span> <i className="mdi mdi-sort header-icon"></i>
+						</div>, dataIndex: 'driver_id', key:'driver_id', width: 800 }, 
+		{
+			title: <div onClick={() => { this.sortList('email') }}>
+				<span>Email </span> <i className="mdi mdi-sort header-icon"></i>
+			</div>, dataIndex: 'email', key:'email', width: 1000 },
 		{ title: 'Account Status', dataIndex: 'email_verified', key:'email_verified', width: 1000, render: (val)=> <div>{(val) ? 'Verified' : 'Not Verified'}</div> },
-		{ title: 'Created At', dataIndex: 'created_at', key:'created_at', width: 1000},
 		{ title: 'Actions', dataIndex: 'user_id', key:'operations', 
 			render: (val) => <div><button type="button" title="Edit" onClick={()=> { this.editDriver(val) }} className="btn margin-right10 btn-icons btn-rounded btn-inverse-outline-primary"><i className="mdi mdi-account-edit"></i></button><button title="Delete" type="button" onClick={() => {this.openDeletePopUp(val)}} className="btn btn-icons btn-rounded btn-inverse-outline-primary"><i className="mdi mdi-delete"></i></button></div>
 		}
 	];
+
+	
 
 	/**
 	 * When Component Did Mount
@@ -54,15 +67,29 @@ class AdminDrivers extends Component {
 	}
 
 	/**
+	 * sortList
+	 */
+	sortList(val) {
+		this.setState ({
+			order: this.state.order === 'desc'? 'asc' : 'desc',
+			field_name: val,
+		}, () => this.getDrivers())
+	}
+
+	/**
 	 * get Drivers
 	 */
 	getDrivers() {
 		this.setState({
 			isRequesting: true
 		})
+
 		var url = '/user/drivers?'
 		url+='limit=' + this.state.limit
-		url+='&page=' + this.state.page 
+		url+='&page=' + this.state.page
+		url+='&field_name=' + this.state.field_name
+		url+='&order=' + this.state.order
+		
 		httpGet(url).then((success) => {
 			success.data.forEach(function (element, key) {
 				element.created_at = convertFormattedDate(element.created_at);
@@ -172,6 +199,15 @@ class AdminDrivers extends Component {
 		})
 	}
 
+	/**
+   * Export Report
+   */
+	exportReport() {
+		var url = this._env.getENV().API_BASE_URL + '/user/download-drivers?'
+		url += 'token=Bearer ' + getUserDataFromLocalStorage().token
+		window.open(url);
+	}
+
 	render() {
 		const { user } = this.user;
 		const { drivers } = this.state;
@@ -195,10 +231,13 @@ class AdminDrivers extends Component {
 								<div className="col-lg-12 grid-margin stretch-card">
 							        <div className="card">
 								        <div className="card-body">
-								            <h2 className="card-title">Drivers Listing</h2>
+													<h2 className="card-title">
+														<span>Drivers Listing</span>														
+													</h2>
 								            <button type="button" className="btn btn-primary btn-fw add-driver-btn" onClick={()=> {this.gotoRoute('/admin/drivers/add')}}>
-                          						<i className="mdi mdi-account-plus"></i>Add Driver
-                          					</button>
+															<i className="mdi mdi-account-plus"></i>Add Driver
+														</button>
+														<button type="button" onClick={() => this.exportReport()} className="btn btn-success btn-fw add-driver-btn download-driver">Export</button>
 								            <div className="table-responsive">
 								            	{
 								            		drivers &&

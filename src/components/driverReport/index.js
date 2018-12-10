@@ -32,6 +32,8 @@ class DriversReports extends Component {
     total_pages: 0,
     page: 1,
     limit: 30,
+    order: 'desc',
+    field_name: 'id',
     report: {},
     open: false,
   };
@@ -42,12 +44,24 @@ class DriversReports extends Component {
   columns = [
     // { title: 'Driver Name', dataIndex: 'drivername', key: 'drivername', width: 1000 },
     // { title: 'Driver Id', dataIndex: 'driver_id', key: 'driver_id', width: 1000 },
-    { title: 'S No', dataIndex: 'key', key: 'key', width: 1000 },
-    { title: 'Week', dataIndex: 'week', key: 'week', width: 1000 },
-    { title: 'Customer', dataIndex: 'customer', key: 'customer', width: 1000 },
-    { title: 'Ref', dataIndex: 'ref', key: 'ref', width: 1000 },
+    // { title: 'S No', dataIndex: 'key', key: 'key', width: 1000 },
+    {
+      title: <div onClick={() => { this.sortList('week') }}>
+        <span>Week </span> <i className="mdi mdi-sort header-icon"></i>
+      </div>, dataIndex: 'week', key: 'week', width: 1000 },
+    {
+      title: <div onClick={() => { this.sortList('customer') }}>
+        <span>Customer </span> <i className="mdi mdi-sort header-icon"></i>
+      </div>, dataIndex: 'customer', key: 'customer', width: 1000 },
+    {
+      title: <div onClick={() => { this.sortList('ref') }}>
+        <span>Ref </span> <i className="mdi mdi-sort header-icon"></i>
+      </div>, dataIndex: 'ref', key: 'ref', width: 1000 },
     { title: 'Amount Billed', dataIndex: 'amount_billed', key: 'amount_billed', width: 1000 },
-    { title: 'Consignee', dataIndex: 'consignee', key: 'consignee', width: 1000 },
+    {
+      title: <div onClick={() => { this.sortList('consignee') }}>
+        <span>Consignee </span> <i className="mdi mdi-sort header-icon"></i>
+      </div>, dataIndex: 'consignee', key: 'consignee', width: 1000 },
     // { title: 'Shipper', dataIndex: 'shipper', key: 'shipper', width: 1000 },
     // { title: 'Pu City', dataIndex: 'pu_city', key: 'pu_city', width: 1000 },
     // { title: 'Pu State', dataIndex: 'pu_state', key: 'pu_state', width: 1000 },
@@ -82,6 +96,8 @@ class DriversReports extends Component {
     var url = '/fasttrac/driver-report?'
     url += 'limit=' + this.state.limit
     url += '&page=' + this.state.page
+    url += '&field_name=' + this.state.field_name
+    url += '&order=' + this.state.order
     httpGet(url).then((success) => {
       success.data.forEach(function (element, key) {
         element.key = key + 1;  
@@ -111,6 +127,16 @@ class DriversReports extends Component {
   onCloseModal = () => {
     this.setState({ open: false });
   };
+
+  /**
+  * sortList
+  */
+  sortList(val) {
+    this.setState({
+      order: this.state.order === 'desc' ? 'asc' : 'desc',
+      field_name: val,
+    }, () => this.getDriversReport())
+  }
 
 	/**
 	 * handle error message
@@ -145,7 +171,14 @@ class DriversReports extends Component {
     })
   }
 
-  
+  /**
+   * Export Report
+   */
+  exportReport() {
+    var url = this._env.getENV().API_BASE_URL + '/fasttrac/download-driver-report?'
+    url += 'token=Bearer ' + getUserDataFromLocalStorage().token
+    window.open(url);
+  }  
 
   render() {
     const { user } = this.user;
@@ -172,7 +205,9 @@ class DriversReports extends Component {
                       <div className="card-body">
                         <h2 className="card-title">
                           <span>Driver Report Listing</span>
+                          {/* <button type="button" onClick={() => this.exportReport()} className="btn btn-success mr-2 export-btn">Export</button> */}
                         </h2>
+                        <button type="button" onClick={() => this.exportReport()} className="btn btn-success btn-fw add-driver-btn">Export</button>
                         <div className="table-responsive">
                           {
                             this.state.driversReports.length > 0 ?

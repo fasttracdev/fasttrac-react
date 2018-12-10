@@ -30,8 +30,8 @@ class AdminDrivers extends Component {
 		total_pages: 0,
 		page: 1,
 		limit:10,
-		order: 'desc',
-		field_name: 'id',
+		order_dir: 'desc',
+		order_field: 'id',
 	};
 
 	/**
@@ -42,22 +42,22 @@ class AdminDrivers extends Component {
 		{
 			title:<div onClick={() => { this.sortList('first_name') }}>
 							<span>Name </span> <i className="mdi mdi-sort header-icon"></i>
-						</div>, 
-			dataIndex: 'name', key: 'name', width: 1000 }, 
+						</div>,
+			dataIndex: 'name', key: 'name', width: 1000 },
 		{ 	title: <div onClick={() => { this.sortList('driver_id') }}>
 							<span>Driver Id </span> <i className="mdi mdi-sort header-icon"></i>
-						</div>, dataIndex: 'driver_id', key:'driver_id', width: 800 }, 
+						</div>, dataIndex: 'driver_id', key:'driver_id', width: 800 },
 		{
 			title: <div onClick={() => { this.sortList('email') }}>
 				<span>Email </span> <i className="mdi mdi-sort header-icon"></i>
 			</div>, dataIndex: 'email', key:'email', width: 1000 },
 		{ title: 'Account Status', dataIndex: 'email_verified', key:'email_verified', width: 1000, render: (val)=> <div>{(val) ? 'Verified' : 'Not Verified'}</div> },
-		{ title: 'Actions', dataIndex: 'user_id', key:'operations', 
+		{ title: 'Actions', dataIndex: 'user_id', key:'operations',
 			render: (val) => <div><button type="button" title="Edit" onClick={()=> { this.editDriver(val) }} className="btn margin-right10 btn-icons btn-rounded btn-inverse-outline-primary"><i className="mdi mdi-account-edit"></i></button><button title="Delete" type="button" onClick={() => {this.openDeletePopUp(val)}} className="btn btn-icons btn-rounded btn-inverse-outline-primary"><i className="mdi mdi-delete"></i></button></div>
 		}
 	];
 
-	
+
 
 	/**
 	 * When Component Did Mount
@@ -71,8 +71,8 @@ class AdminDrivers extends Component {
 	 */
 	sortList(val) {
 		this.setState ({
-			order: this.state.order === 'desc'? 'asc' : 'desc',
-			field_name: val,
+			order_dir: this.state.order_dir === 'desc'? 'asc' : 'desc',
+			order_field: val,
 		}, () => this.getDrivers())
 	}
 
@@ -87,9 +87,9 @@ class AdminDrivers extends Component {
 		var url = '/user/drivers?'
 		url+='limit=' + this.state.limit
 		url+='&page=' + this.state.page
-		url+='&field_name=' + this.state.field_name
-		url+='&order=' + this.state.order
-		
+		url+='&order_field=' + this.state.order_field
+		url+='&order_dir=' + this.state.order_dir
+
 		httpGet(url).then((success) => {
 			success.data.forEach(function (element, key) {
 				element.created_at = convertFormattedDate(element.created_at);
@@ -181,7 +181,7 @@ class AdminDrivers extends Component {
 				variant: 'error',
 				autoHideDuration: 3000
 			});
-		}	
+		}
 		this.setState({
 			isRequesting: false
 		})
@@ -232,7 +232,7 @@ class AdminDrivers extends Component {
 							        <div className="card">
 								        <div className="card-body">
 													<h2 className="card-title">
-														<span>Drivers Listing</span>														
+														<span>Drivers Listing</span>
 													</h2>
 								            <button type="button" className="btn btn-primary btn-fw add-driver-btn" onClick={()=> {this.gotoRoute('/admin/drivers/add')}}>
 															<i className="mdi mdi-account-plus"></i>Add Driver

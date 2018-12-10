@@ -32,8 +32,8 @@ class AdminDriversReports extends Component {
     total_pages: 0,
     page: 1,
     limit: 10,
-    order: 'desc',
-    field_name: 'id',
+    order_dir: 'desc',
+    order_field: 'id',
     report: {},
     open: false,
     modalClass: 'modal-report-cont'
@@ -85,7 +85,7 @@ class AdminDriversReports extends Component {
   componentDidMount() {
     this.getDriversReport();
   }
-  
+
   /* Constructor */
   constructor(props) {
     super(props);
@@ -102,8 +102,8 @@ class AdminDriversReports extends Component {
     var url = '/fasttrac/drivers-report?'
     url += 'limit=' + this.state.limit
     url += '&page=' + this.state.page
-    url += '&field_name=' + this.state.field_name
-    url += '&order=' + this.state.order
+    url += '&order_field=' + this.state.order_field
+    url += '&order_dir=' + this.state.order_dir
     httpGet(url).then((success) => {
       success.data.forEach(function (element, key) {
         element.key = key;
@@ -139,11 +139,11 @@ class AdminDriversReports extends Component {
 	 */
   sortList(val) {
     this.setState({
-      order: this.state.order === 'desc' ? 'asc' : 'desc',
-      field_name: val,
+      order_dir: this.state.order_dir === 'desc' ? 'asc' : 'desc',
+      order_field: val,
     }, () => this.getDriversReport())
   }
-  
+
 
 	/**
 	 * handle error message
@@ -192,11 +192,11 @@ class AdminDriversReports extends Component {
     return (
       <div className="container-scroller">
         <div>
-      
+
         </div>
         {/* partial:partials/_navbar.html */}
         <Topbar user={user} />
-      
+
         {/* partial */}
         <div className="container-fluid page-body-wrapper">
           {/* partial:partials/_sidebar.html */}
@@ -244,7 +244,7 @@ class AdminDriversReports extends Component {
                   </div>
                 </div>
               </div>
-      
+
               {/* footer */}
               <footer className="footer">
                 <div className="container-fluid clearfix">
@@ -308,7 +308,7 @@ class AdminDriversReports extends Component {
                     <td>{report.de_state ? report.de_state : '---'}</td>
                   </tr>
                 </table>
-              </div>             
+              </div>
             </div>
           </Modal>
         </div>

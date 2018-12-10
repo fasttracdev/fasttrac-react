@@ -32,8 +32,8 @@ class DriversReports extends Component {
     total_pages: 0,
     page: 1,
     limit: 30,
-    order: 'desc',
-    field_name: 'id',
+    order_dir: 'desc',
+    order_field: 'id',
     report: {},
     open: false,
   };
@@ -96,12 +96,12 @@ class DriversReports extends Component {
     var url = '/fasttrac/driver-report?'
     url += 'limit=' + this.state.limit
     url += '&page=' + this.state.page
-    url += '&field_name=' + this.state.field_name
-    url += '&order=' + this.state.order
+    url += '&order_field=' + this.state.order_field
+    url += '&order_dir=' + this.state.order_dir
     httpGet(url).then((success) => {
       success.data.forEach(function (element, key) {
-        element.key = key + 1;  
-        element.amount_billed = numeral(element.amount_billed).format('$0,0.00');     
+        element.key = key + 1;
+        element.amount_billed = numeral(element.amount_billed).format('$0,0.00');
       });
       this.setState({
         driversReports: success.data,
@@ -133,8 +133,8 @@ class DriversReports extends Component {
   */
   sortList(val) {
     this.setState({
-      order: this.state.order === 'desc' ? 'asc' : 'desc',
-      field_name: val,
+      order_dir: this.state.order_dir === 'desc' ? 'asc' : 'desc',
+      order_field: val,
     }, () => this.getDriversReport())
   }
 
@@ -178,7 +178,7 @@ class DriversReports extends Component {
     var url = this._env.getENV().API_BASE_URL + '/fasttrac/download-driver-report?'
     url += 'token=Bearer ' + getUserDataFromLocalStorage().token
     window.open(url);
-  }  
+  }
 
   render() {
     const { user } = this.user;

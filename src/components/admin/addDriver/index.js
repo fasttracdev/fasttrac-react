@@ -262,6 +262,13 @@ class AdminAddDriver extends Component {
 	}
 
 	/**
+	 *  Cancel Button
+	 */
+	cancel() {
+		this.props.history.push('/admin/drivers');
+	}
+
+	/**
 	 * Render HTML
 	 */
 	render() {
@@ -413,6 +420,9 @@ class AdminAddDriver extends Component {
 																			}
 																	</div>
 																	<div className="text-center">
+																		<button type="button" onClick={() => this.cancel()} className="btn btn-basic mr-2">
+																			<span>Cancel</span>
+																		</button>
 																		<button type="button" onClick={()=> this.addDriver()} className="btn btn-success mr-2">
 																			{
 																				isSubmitAddDriver &&	

@@ -32,6 +32,10 @@ class AdminDrivers extends Component {
 		limit:10,
 		order_dir: 'desc',
 		order_field: 'id',
+		is_filter: false,
+		driver_name: '',
+		driver_id: '',
+		email: ''
 	};
 
 	/**
@@ -42,22 +46,22 @@ class AdminDrivers extends Component {
 		{
 			title:<div onClick={() => { this.sortList('first_name') }}>
 							<span>Name </span> <i className="mdi mdi-sort header-icon"></i>
-						</div>,
-			dataIndex: 'name', key: 'name', width: 1000 },
+						</div>, 
+			dataIndex: 'name', key: 'name', width: 1000 }, 
 		{ 	title: <div onClick={() => { this.sortList('driver_id') }}>
 							<span>Driver Id </span> <i className="mdi mdi-sort header-icon"></i>
-						</div>, dataIndex: 'driver_id', key:'driver_id', width: 800 },
+						</div>, dataIndex: 'driver_id', key:'driver_id', width: 800 }, 
 		{
 			title: <div onClick={() => { this.sortList('email') }}>
 				<span>Email </span> <i className="mdi mdi-sort header-icon"></i>
 			</div>, dataIndex: 'email', key:'email', width: 1000 },
 		{ title: 'Account Status', dataIndex: 'email_verified', key:'email_verified', width: 1000, render: (val)=> <div>{(val) ? 'Verified' : 'Not Verified'}</div> },
-		{ title: 'Actions', dataIndex: 'user_id', key:'operations',
+		{ title: 'Actions', dataIndex: 'user_id', key:'operations', 
 			render: (val) => <div><button type="button" title="Edit" onClick={()=> { this.editDriver(val) }} className="btn margin-right10 btn-icons btn-rounded btn-inverse-outline-primary"><i className="mdi mdi-account-edit"></i></button><button title="Delete" type="button" onClick={() => {this.openDeletePopUp(val)}} className="btn btn-icons btn-rounded btn-inverse-outline-primary"><i className="mdi mdi-delete"></i></button></div>
 		}
 	];
 
-
+	
 
 	/**
 	 * When Component Did Mount
@@ -83,14 +87,9 @@ class AdminDrivers extends Component {
 		this.setState({
 			isRequesting: true
 		})
-
-		var url = '/user/drivers?'
-		url+='limit=' + this.state.limit
-		url+='&page=' + this.state.page
-		url+='&order_field=' + this.state.order_field
-		url+='&order_dir=' + this.state.order_dir
-
-		httpGet(url).then((success) => {
+		var url = '/user/drivers?';
+		var params = this.getFilterParams();
+		httpGet(url, params).then((success) => {
 			success.data.forEach(function (element, key) {
 				element.created_at = convertFormattedDate(element.created_at);
 				element.key = key;
@@ -146,9 +145,13 @@ class AdminDrivers extends Component {
 					}, () => {
 						this.getDrivers()
 					});
-					this.props.enqueueSnackbar(MESSAGES.DRIVER_DELETED, {
+					this.props.enqueueSnackbar(MESSAGES.DRIVER_DELETED, {					
+						anchorOrigin: {
+							vertical: 'top',
+							horizontal: 'right',
+						},
 						variant: 'success',
-						autoHideDuration: 3000
+						autoHideDuration: 10000
 					});
 				}, (err) => {
 					this.handleErrorMessage(err);
@@ -172,16 +175,24 @@ class AdminDrivers extends Component {
 	handleErrorMessage(err) {
 		if (err.errors && err.errors.message) {
 			this.props.enqueueSnackbar(err.errors.message, {
+					ancorOrigin: {
+							vertical: 'top',
+							horizontal: 'right',
+						},
 				variant: 'error',
 				autoHideDuration: 3000
 			});
 		}
 		if (err.errors && !err.errors.message) {
 			this.props.enqueueSnackbar(err.errors, {
+					ancorOrigin: {
+							vertical: 'top',
+							horizontal: 'right',
+						},
 				variant: 'error',
 				autoHideDuration: 3000
 			});
-		}
+		}	
 		this.setState({
 			isRequesting: false
 		})
@@ -198,14 +209,73 @@ class AdminDrivers extends Component {
 			this.getDrivers()
 		})
 	}
+	
+	/**
+	 * make Query string
+	 */
+	encodeQueryData (data) {
+		const ret = [];
+		for (let d in data)
+			ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]));
+		return ret.join('&');
+	}
 
 	/**
    * Export Report
    */
 	exportReport() {
+		const querystring = this.encodeQueryData(this.getFilterParams());
 		var url = this._env.getENV().API_BASE_URL + '/user/download-drivers?'
 		url += 'token=Bearer ' + getUserDataFromLocalStorage().token
+		url += '&' + querystring
 		window.open(url);
+	}
+
+	/**
+	* Toggle agent filter
+	*/
+	toggleFilter() {
+		this.setState({
+			is_filter: !this.state.is_filter,
+		})
+	}
+
+	/**
+   * Apply Filter and seting params
+   */
+	getFilterParams(key) {
+		let params = {}
+
+		params['order_dir'] = this.state.order_dir
+		params['order_field'] = this.state.order_field
+
+		if (this.state.page) {
+			params['page'] = this.state.page
+		}
+
+		if (this.state.limit) {
+			params['limit'] = this.state.limit
+		}
+
+		if (this.state.driver_name) {
+			params['driver_name'] = this.state.driver_name
+		}
+		if (this.state.driver_id) {
+			params['driver_id'] = this.state.driver_id
+		}
+		if (this.state.email) {
+			params['email'] = this.state.email
+		}
+		
+		return params
+	}
+
+	reset() {
+		this.setState({
+			email: '',
+			driver_id: '',
+			driver_name: ''
+		},() => this.getDrivers())
 	}
 
 	render() {
@@ -226,18 +296,83 @@ class AdminDrivers extends Component {
 					{this.state.isRequesting ?
 						<Loader isLoader={this.state.isRequesting} /> :
 					<div className="main-panel">
-						<div className="content-wrapper">
+						<div className="content-wrapper">							
+							<div className="grid-margin stretch-card">
+								<div className="advanced-filters-wrap">
+									<div className="table-btns">
+										<button
+											onClick={() => this.toggleFilter()}
+												className="btn btn-primary"
+										>
+											Advanced Filter <i className="mdi mdi-arrow-down" />
+										</button>
+									</div>
+								</div>								
+							</div>
+							{
+								this.state.is_filter ?
+								<div className="filter-inner-content">
+										<div className="grid-margin stretch-card form-group">
+										<label htmlFor="exampleInputID">Driver Name</label>
+										<input
+											className="form-control"
+											id="drivername"
+											name="drivername"
+											placeholder="Driver Name"
+											type="text"
+											onChange={(e) => this.setState({
+												driver_name: e.target.value
+											})}
+											value={this.state.driver_name}
+											autoComplete="Off"
+										/>
+									</div>
+										<div className="grid-margin stretch-card form-group">
+											<label htmlFor="exampleInputID">Driver Id</label>
+											<input
+											className="form-control"
+											id="driverid"
+											name="driverid"
+											placeholder="Driver Id"
+											type="number"
+											onChange={(e) => this.setState({
+												driver_id: e.target.value
+											})}
+											value={this.state.driver_id}
+											autoComplete="Off"
+										/>
+									</div>
+										<div className="grid-margin stretch-card form-group">
+											<label htmlFor="exampleInputID">Email</label>
+											<input
+											className="form-control"
+											id="email"
+											name="email"
+											placeholder="Email"
+											type="text"
+											onChange={(e) => this.setState({
+												email: e.target.value
+											})}
+											value={this.state.email}
+											autoComplete="Off"
+										/>
+									</div>
+									<button type="button" onClick={() => this.reset()} className="btn btn-primary apply-btn">Reset</button>
+									<button type="button" onClick={() => this.getDrivers()} className="btn btn-success apply-btn">Apply</button>
+								</div> : null
+							}
 							<div className="row">
-								<div className="col-lg-12 grid-margin stretch-card">
+ 								<div className="col-lg-12 grid-margin stretch-card">
 							        <div className="card">
 								        <div className="card-body">
 													<h2 className="card-title">
-														<span>Drivers Listing</span>
+														<span>Drivers Listing</span>														
 													</h2>
+
 								            <button type="button" className="btn btn-primary btn-fw add-driver-btn" onClick={()=> {this.gotoRoute('/admin/drivers/add')}}>
 															<i className="mdi mdi-account-plus"></i>Add Driver
 														</button>
-														<button type="button" onClick={() => this.exportReport()} className="btn btn-success btn-fw add-driver-btn download-driver">Export</button>
+														<button type="button" onClick={() => this.exportReport()} className="btn btn-success btn-fw add-driver-btn download-driver" disabled={this.state.drivers.length <= 0}>Export</button>
 								            <div className="table-responsive">
 								            	{
 								            		drivers &&
@@ -246,21 +381,21 @@ class AdminDrivers extends Component {
 								            </div>
 														{
 															this.state.drivers.length > 0 ?
-															<div className="pagination-wrapper mt-3 mb-3 ml-3">
-																<ReactPaginate previousLabel={"<"}
-																	nextLabel={">"}
-																	breakClassName={"break-me"}
-																	pageCount={this.state.total_pages}
-																	marginPagesDisplayed={2}
-																	pageRangeDisplayed={10}
-																	breakLabel={"..."}
-																	onPageChange={e => this.handlePagination(e)}
-																	containerClassName={"pagination"}
-																	activeClassName={'active'}
-																	subContainerClassName={"pages pagination"}
-																	initialPage={this.state.page - 1}
-																	/>
-															</div>: null
+														<div className="pagination-wrapper mt-3 mb-3 ml-3">
+															<ReactPaginate previousLabel={"<"}
+																nextLabel={">"}
+																breakClassName={"break-me"}
+																pageCount={this.state.total_pages}
+																marginPagesDisplayed={2}
+																pageRangeDisplayed={1}
+																breakLabel={". . ."}
+																onPageChange={e => this.handlePagination(e)}
+																containerClassName={"pagination"}
+																activeClassName={'active'}
+																subContainerClassName={"pages pagination"}
+																initialPage={this.state.page - 1}
+															/>
+														</div> : null
 														}
 								      </div>
 							      </div>

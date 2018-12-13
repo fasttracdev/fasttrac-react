@@ -36,7 +36,12 @@ class AdminDriversReports extends Component {
     order_field: 'id',
     report: {},
     open: false,
-    modalClass: 'modal-report-cont'
+    modalClass: 'modal-report-cont',
+    is_filter: false,
+    driver_name: '',
+    driver_id: '',
+    ref: '',
+    customer: ''
   };
 
 	/**
@@ -100,11 +105,8 @@ class AdminDriversReports extends Component {
       isRequesting: true
     })
     var url = '/fasttrac/drivers-report?'
-    url += 'limit=' + this.state.limit
-    url += '&page=' + this.state.page
-    url += '&order_field=' + this.state.order_field
-    url += '&order_dir=' + this.state.order_dir
-    httpGet(url).then((success) => {
+    var params = this.getFilterParams();
+    httpGet(url, params).then((success) => {
       success.data.forEach(function (element, key) {
         element.key = key;
         element.amount_billed = numeral(element.amount_billed).format('$0,0.00');
@@ -117,6 +119,69 @@ class AdminDriversReports extends Component {
     }, (err) => {
       this.handleErrorMessage(err);
     });
+  }
+
+  /**
+	* Toggle agent filter
+	*/
+  toggleFilter() {
+    this.setState({
+      is_filter: !this.state.is_filter,
+    })
+  }
+
+  /**
+   * Apply Filter and seting params
+   */
+  getFilterParams(key) {
+    let params = {}
+
+    params['order_dir'] = this.state.order_dir
+    params['order_field'] = this.state.order_field
+
+    if (this.state.page) {
+      params['page'] = this.state.page
+    }
+
+    if (this.state.limit) {
+      params['limit'] = this.state.limit
+    }
+
+    if (this.state.driver_name) {
+      params['driver_name'] = this.state.driver_name
+    }
+    if (this.state.driver_id) {
+      params['driver_id'] = this.state.driver_id
+    }
+    if (this.state.ref) {
+      params['ref'] = this.state.ref
+    }
+    if (this.state.customer) {
+      params['customer'] = this.state.customer
+    }
+
+    return params
+  }
+
+  /**
+* make Query string
+*/
+  encodeQueryData(data) {
+    const ret = [];
+    for (let d in data)
+      ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]));
+    return ret.join('&');
+  }
+
+	/**
+   * Export Report
+   */
+  exportReport() {
+    const querystring = this.encodeQueryData(this.getFilterParams());
+    var url = this._env.getENV().API_BASE_URL + '/fasttrac/download-drivers-report?'
+    url += 'token=Bearer ' + getUserDataFromLocalStorage().token
+    url += '&' + querystring
+    window.open(url);
   }
 
   viewReport(id) {
@@ -151,12 +216,20 @@ class AdminDriversReports extends Component {
   handleErrorMessage(err) {
     if (err.errors && err.errors.message) {
       this.props.enqueueSnackbar(err.errors.message, {
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'right',
+        },
         variant: 'error',
         autoHideDuration: 3000
       });
     }
     if (err.errors && !err.errors.message) {
       this.props.enqueueSnackbar(err.errors, {
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'right',
+        },
         variant: 'error',
         autoHideDuration: 3000
       });
@@ -177,13 +250,15 @@ class AdminDriversReports extends Component {
       this.getDriversReport()
     })
   }
-  /**
-   * Export Report
-   */
-  exportReport() {
-    var url = this._env.getENV().API_BASE_URL +'/fasttrac/download-drivers-report?'
-    url += 'token=Bearer ' + getUserDataFromLocalStorage().token
-    window.open(url);
+
+  
+  reset() {
+    this.setState({
+      ref: '',
+      driver_id: '',
+      customer:'',
+      driver_name:''
+    }, () => this.getDriversReport())
   }
 
   render() {
@@ -205,6 +280,87 @@ class AdminDriversReports extends Component {
             <Loader isLoader={this.state.isRequesting} /> :
             <div className="main-panel">
               <div className="content-wrapper">
+
+                <div className="grid-margin stretch-card">
+                  <div className="advanced-filters-wrap">
+                    <div className="table-btns">
+                      <button
+                        onClick={() => this.toggleFilter()}
+                        className="btn btn-primary"
+                      >
+                        Advanced Filter <i className="mdi mdi-arrow-down" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                {
+                  this.state.is_filter ?
+                    <div className="filter-inner-content">
+                      <div className="grid-margin stretch-card form-group">
+                        <label htmlFor="exampleInputID">Driver Name</label>
+                        <input
+                          className="form-control"
+                          id="drivername"
+                          name="drivername"
+                          placeholder="Driver Name"
+                          type="text"
+                          onChange={(e) => this.setState({
+                            driver_name: e.target.value
+                          })}
+                          value={this.state.driver_name}
+                          autoComplete="Off"
+                        />
+                      </div>
+                      <div className="grid-margin stretch-card form-group">
+                        <label htmlFor="exampleInputID">Driver Id</label>
+                        <input
+                          className="form-control"
+                          id="driverid"
+                          name="driverid"
+                          placeholder="Driver Id"
+                          type="number"
+                          onChange={(e) => this.setState({
+                            driver_id: e.target.value
+                          })}
+                          value={this.state.driver_id}
+                          autoComplete="Off"
+                        />
+                      </div>
+                      <div className="grid-margin stretch-card form-group">
+                        <label htmlFor="exampleInputID">Ref</label>
+                        <input
+                          className="form-control"
+                          id="ref"
+                          name="ref"
+                          placeholder="Ref"
+                          type="text"
+                          onChange={(e) => this.setState({
+                            ref: e.target.value
+                          })}
+                          value={this.state.ref}
+                          autoComplete="Off"
+                        />
+                      </div>
+                      <div className="grid-margin stretch-card form-group">
+                        <label htmlFor="exampleInputID">Customer</label>
+                        <input
+                          className="form-control"
+                          id="customer"
+                          name="customer"
+                          placeholder="Customer"
+                          type="text"
+                          onChange={(e) => this.setState({
+                            customer: e.target.value
+                          })}
+                          value={this.state.customer}
+                          autoComplete="Off"
+                        />
+                      </div>                   
+                      <button type="button" onClick={() => this.reset()} className="btn btn-primary apply-btn">Reset</button>   
+                      <button type="button" onClick={() => this.getDriversReport()} className="btn btn-success apply-btn">Apply</button>
+                    </div> : null
+                }
+
                 <div className="row">
                   <div className="col-lg-12 grid-margin stretch-card">
                     <div className="card">
@@ -212,7 +368,7 @@ class AdminDriversReports extends Component {
                         <h2 className="card-title">
                           <span>Drivers Report Listing</span>
                         </h2>
-                        <button type="button" onClick={() => this.exportReport()} className="btn btn-success btn-fw add-driver-btn">Export</button>
+                        <button type="button" onClick={() => this.exportReport()} className="btn btn-success btn-fw add-driver-btn" disabled={this.state.driversReports.length <= 0}>Export</button>
 
                           <div className="table-responsive">
                           {
@@ -229,8 +385,8 @@ class AdminDriversReports extends Component {
                                 breakClassName={"break-me"}
                                 pageCount={this.state.total_pages}
                                 marginPagesDisplayed={2}
-                                pageRangeDisplayed={10}
-                                breakLabel={"..."}
+                                pageRangeDisplayed={1}
+                                breakLabel={". . ."}
                                 onPageChange={e => this.handlePagination(e)}
                                 containerClassName={"pagination"}
                                 activeClassName={'active'}

@@ -83,6 +83,10 @@ class AdminAddDriver extends Component {
 						isSubmitAddDriver: false
 					});
 					this.props.enqueueSnackbar(MESSAGES.DRIVER_ADDED, {
+						anchorOrigin: {
+							vertical: 'top',
+							horizontal: 'right',
+						},
 						variant: 'success',
 						autoHideDuration: 3000
 					});
@@ -224,18 +228,30 @@ class AdminAddDriver extends Component {
 		if(Array.isArray(err.errors)) {
 			var error = err.errors[0].msg ? err.errors[0].msg : err.errors[0].message
 			this.props.enqueueSnackbar(error, {
+				anchorOrigin: {
+					vertical: 'top',
+					horizontal: 'right',
+				},
 				variant: 'error',
 				autoHideDuration: 3000
 			});
 		}
 		if (!Array.isArray(err.errors) && err.errors && err.errors.message) {
 			this.props.enqueueSnackbar(err.errors.message, {
+				anchorOrigin: {
+					vertical: 'top',
+					horizontal: 'right',
+				},
 				variant: 'error',
 				autoHideDuration: 3000
 			});
 		}
 		if (!Array.isArray(err.errors) && err.errors && !err.errors.message) {
 			this.props.enqueueSnackbar(err.errors, {
+				anchorOrigin: {
+					vertical: 'top',
+					horizontal: 'right',
+				},
 				variant: 'error',
 				autoHideDuration: 3000
 			});

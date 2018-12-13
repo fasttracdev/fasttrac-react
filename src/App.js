@@ -19,6 +19,7 @@ import AdminDriversReports from './components/admin/driverReport';
 import AdminAddDriver from './components/admin/addDriver';
 import AdminEditDriver from './components/admin/editDriver';
 import DriversReports from './components/driverReport';
+import ForgotPassword from './components/forgotPassword';
 
 // Driver Components
 import Dashboard from './components/admin/dashboard';
@@ -77,6 +78,11 @@ class App extends Component {
                 exact
                 path="/driver-report"
                 component={DriversReports}
+              />
+              <Route
+                exact
+                path="/forgot-password"
+                component={ForgotPassword}
               />
             </Switch>
           </Router>

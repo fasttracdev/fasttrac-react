@@ -56,6 +56,12 @@ class DashBoard extends Component {
 			})
 		});
 	}
+	/**
+	 * Go to Driver listing page
+	 */
+	goToDriversListings() {
+		this.props.history.push('/admin/drivers');
+	}
 
 	/**
 	 * Render Html 
@@ -76,14 +82,14 @@ class DashBoard extends Component {
 					<div className="main-panel">
 						<div className="content-wrapper">
 							<div className="row">						       
-						        <div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card">
+										<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card dashboard-card" onClick={() => this.goToDriversListings()}>
 						          <div className="card card-statistics">
 						            <div className="card-body">
 						              <div className="clearfix">
 						                <div className="float-left">
 						                  <i className="mdi mdi-account-location text-info icon-lg" />
 						                </div>
-						                <div className="float-right">
+														<div className="float-right">
 						                  <p className="mb-0 text-right">Drivers</p>
 						                  <div className="fluid-container">
 						                    <h3 className="font-weight-medium text-right mb-0">{this.state.driver_count}</h3>

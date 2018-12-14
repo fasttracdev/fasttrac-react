@@ -15,31 +15,29 @@ let baseConfig = {
     rules: [
       { test: /\.js$/, exclude: /node_modules/, use: 'babel-loader' },
       {
-        test: /\.scss$/,
-        use: [
-          'style-loader',
-          {
-            loader: 'css-loader',
-            options: {
-              modules: true,
-              importLoaders: 1,
-              localIdentName: '[name]__[local]___[hash:base64:5]',
-              camelCase: true
-            }
-          }
-        ]
-      },
-      {
-        test: /\.css$/,
-        loader: 'style-loader!css-loader'
-      },
-      {
         test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.woff$/,/\.svg$/],
         loader: require.resolve('url-loader'),
         options: {
           limit: 10000,
           name: 'static/media/[name].[hash:8].[ext]',
         },
+      },
+      {
+        test: /\.scss$/,
+        use: [{
+          loader: "style-loader"
+        }, {
+          loader: "css-loader"
+        }, {
+          loader: "sass-loader",
+          options: {
+            includePaths: ["absolute/path/a", "absolute/path/b"]
+          }
+        }]
+      },
+      {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader'
       },
       {
         test: /\.html$/,
@@ -64,7 +62,7 @@ let baseConfig = {
       {
         test: /\.svg$/,
         loader: 'svg-inline-loader'
-      }
+      },
     ]
   },
   resolve: {

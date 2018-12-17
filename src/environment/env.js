@@ -10,7 +10,7 @@ export default class Environment {
       API_BASE_URL = 'http://localhost:8080'
       APP_BASE_URL = 'http://localhost:8000'
       CLIENTID = '1xw2DSMpt6VAdbH7bZH9XKnRBOX9D2M7'
-      ImagePath = "../../public"
+      ImagePath = "../../../public"
     }else {
       API_BASE_URL = process.env.REACT_APP_API_URL
       APP_BASE_URL = process.env.REACT_APP_API_APP_URL

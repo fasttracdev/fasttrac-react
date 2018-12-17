@@ -9,7 +9,11 @@ class Sidebar extends Component {
 	}
 
 	gotoRoute(route) {
-		this.props.history.push(route);
+		var { user } = this.props;
+		if (user.user_metadata.role === 'admin') {
+			this.props.history.push(route);
+		}
+		return;
 	}
 
 	render() {

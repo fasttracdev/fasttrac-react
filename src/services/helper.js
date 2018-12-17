@@ -79,86 +79,86 @@ export const handleValidation = (data, action) => {
 	let errors = {};
 	let formIsValid = true;
 	if(action==='add') {
-		if (!fields["name"]) {
+		if (!fields["name"] || !fields["name"].replace(/\s+/, '').length) {
 			formIsValid = false;
 			errors["name"] = "Name is required.";
-		}
-	
-		if (typeof fields["name"] !== "undefined") {
-			if (!fields["name"].match(/^[a-zA-Z\s]+$/)) {
-				formIsValid = false;
-				errors["name"] = "Only letters are allowed.";
+		}else {
+			if (typeof fields["name"] !== "undefined") {
+				if (!fields["name"].match(/^[a-zA-Z\s]+$/)) {
+					formIsValid = false;
+					errors["name"] = "Only letters are allowed.";
+				}
 			}
-		}
+		}	
 	}else {
-		if (!fields["first_name"]) {
+		if (!fields["first_name"] || !fields["first_name"].replace(/\s+/, '').length) {
 			formIsValid = false;
 			errors["first_name"] = "First name is required.";
-		}
-	
-		if (typeof fields["first_name"] !== "undefined") {
-			if (!fields["first_name"].match(/^[a-zA-Z]+$/)) {
-				formIsValid = false;
-				errors["first_name"] = "Only letters are allowed.";
+		}else {
+			if (typeof fields["first_name"] !== "undefined") {
+				if (!fields["first_name"].match(/^[a-zA-Z]+$/)) {
+					formIsValid = false;
+					errors["first_name"] = "Only letters are allowed.";
+				}
 			}
 		}
 	
-		if (!fields["last_name"]) {
+	
+		if (!fields["last_name"] || !fields["last_name"].replace(/\s+/, '').length) {
 			formIsValid = false;
 			errors["last_name"] = "Last name is required.";
-		}
-	
-		if (typeof fields["last_name"] !== "undefined") {
-			if (!fields["last_name"].match(/^[a-zA-Z]+$/)) {
-				formIsValid = false;
-				errors["last_name"] = "Only letters are allowed.";
+		}else {
+			if (typeof fields["last_name"] !== "undefined") {
+				if (!fields["last_name"].match(/^[a-zA-Z]+$/)) {
+					formIsValid = false;
+					errors["last_name"] = "Only letters are allowed.";
+				}
 			}
-		}
+		}	
 	}
 
 
-	if (!fields["city"]) {
+	if (!fields["city"] || !fields["city"].replace(/\s+/, '').length) {
 		formIsValid = false;
 		errors["city"] = "City is required.";
 	}
 
-	if (!fields["address"]) {
+	if (!fields["address"] || !fields["address"].replace(/\s+/, '').length) {
 		formIsValid = false;
 		errors["address"] = "Address is required.";
 	}
 
 	//Email
-	if (!fields["email"]) {
+	if (!fields["email"] || !fields["email"].replace(/\s+/, '').length) {
 		formIsValid = false;
 		errors["email"] = "Email is required.";
-	}
-
-	if (typeof fields["email"] !== "undefined") {
-		let lastAtPos = fields["email"].lastIndexOf('@');
-		let lastDotPos = fields["email"].lastIndexOf('.');
-
-		if (!(lastAtPos < lastDotPos && lastAtPos > 0 && fields["email"].indexOf('@@') === -1 && lastDotPos > 2 && (fields["email"].length - lastDotPos) > 2)) {
-			formIsValid = false;
-			errors["email"] = "Please enter a valid email.";
+	}else {
+		if (typeof fields["email"] !== "undefined") {
+			let lastAtPos = fields["email"].lastIndexOf('@');
+			let lastDotPos = fields["email"].lastIndexOf('.');
+	
+			if (!(lastAtPos < lastDotPos && lastAtPos > 0 && fields["email"].indexOf('@@') === -1 && lastDotPos > 2 && (fields["email"].length - lastDotPos) > 2)) {
+				formIsValid = false;
+				errors["email"] = "Please enter a valid email.";
+			}
 		}
 	}
 
-	if (!fields["phone"]) {
+
+	if (!fields["phone"] || !fields["phone"].replace(/\s+/, '').length) {
 		formIsValid = false;
 		errors["phone"] = "Phone number is required.";
-	}
-
-	if (typeof fields["phone"] !== "undefined") {
-		if (fields["phone"].length < 14) {
-			formIsValid = false;
-			errors["phone"] = "Please enter a valid number.";
+	}else {
+		if (typeof fields["phone"] !== "undefined") {
+			if (fields["phone"].length < 14) {
+				formIsValid = false;
+				errors["phone"] = "Please enter a valid number.";
+			}
 		}
 	}
-
 	errors = {
 		err: errors,
 		isValid: formIsValid
 	}
-	console.log(errors);
 	return (errors);
 }

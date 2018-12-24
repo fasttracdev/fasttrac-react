@@ -19,6 +19,13 @@ class Home extends Component {
 	}
 
 	/**
+	 * Go to forgot Password screen
+	 */
+	goToForgotPassword() {
+		this.props.history.push('/forgot-password');
+	}
+
+	/**
 	 * Render HTML
 	 */
 	render() {
@@ -35,6 +42,9 @@ class Home extends Component {
 										</div>
 										<div className="form-group">
 											<button className="btn btn-primary submit-btn btn-block" onClick={() => this.login()}>Login</button>
+										</div>
+										<div className="form-group">
+											<a className="forgot-password" onClick={() => this.goToForgotPassword()}>Forgot Password</a>
 										</div>
 									</div>
 								</div>

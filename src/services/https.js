@@ -34,11 +34,13 @@ export const getCommonHeaders = () => {
  *
  * @param url
  */
-export const httpGet = url => {
+export const httpGet = (url, params) => {
   try {
     var combineUrl = _env.getENV().API_BASE_URL + url;
-    return axios
-      .get(combineUrl, { headers: getCommonHeaders() })
+    return axios      
+      .get(combineUrl, {
+        params: params ? params : null,
+        headers: getCommonHeaders() })
       .then(res => httpHandleResponse(res))
       .catch(err => httpHandleError(err))
   } catch (e) {
@@ -46,6 +48,7 @@ export const httpGet = url => {
     return Promise.reject({})
   }
 }
+
 
 /**
  * POST Request

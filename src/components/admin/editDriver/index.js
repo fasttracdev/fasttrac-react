@@ -139,6 +139,10 @@ class AdminEditDriver extends Component {
 					isRequesting: false
 				});
 				this.props.enqueueSnackbar(MESSAGES.DRIVER_UPDATED, {
+					anchorOrigin: {
+						vertical: 'top',
+						horizontal: 'right',
+					},
 					variant: 'success',
 					autoHideDuration: 3000
 				});
@@ -220,18 +224,30 @@ class AdminEditDriver extends Component {
 	handleErrorMessage(err) {
 		if (Array.isArray(err.errors)) {
 			this.props.enqueueSnackbar(err.errors[0].params + ' is required', {
+				anchorOrigin: {
+					vertical: 'top',
+					horizontal: 'right',
+				},
 				variant: 'error',
 				autoHideDuration: 3000
 			});
 		}
 		if (!Array.isArray(err.errors) && err.errors && err.errors.message) {
 			this.props.enqueueSnackbar(err.errors.message, {
+				anchorOrigin: {
+					vertical: 'top',
+					horizontal: 'right',
+				},
 				variant: 'error',
 				autoHideDuration: 3000
 			});
 		}
 		if (!Array.isArray(err.errors) && err.errors && !err.errors.message) {
 			this.props.enqueueSnackbar(err.errors, {
+				anchorOrigin: {
+					vertical: 'top',
+					horizontal: 'right',
+				},
 				variant: 'error',
 				autoHideDuration: 3000
 			});

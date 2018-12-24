@@ -83,6 +83,10 @@ class AdminAddDriver extends Component {
 						isSubmitAddDriver: false
 					});
 					this.props.enqueueSnackbar(MESSAGES.DRIVER_ADDED, {
+						anchorOrigin: {
+							vertical: 'top',
+							horizontal: 'right',
+						},
 						variant: 'success',
 						autoHideDuration: 3000
 					});
@@ -224,18 +228,30 @@ class AdminAddDriver extends Component {
 		if(Array.isArray(err.errors)) {
 			var error = err.errors[0].msg ? err.errors[0].msg : err.errors[0].message
 			this.props.enqueueSnackbar(error, {
+				anchorOrigin: {
+					vertical: 'top',
+					horizontal: 'right',
+				},
 				variant: 'error',
 				autoHideDuration: 3000
 			});
 		}
 		if (!Array.isArray(err.errors) && err.errors && err.errors.message) {
 			this.props.enqueueSnackbar(err.errors.message, {
+				anchorOrigin: {
+					vertical: 'top',
+					horizontal: 'right',
+				},
 				variant: 'error',
 				autoHideDuration: 3000
 			});
 		}
 		if (!Array.isArray(err.errors) && err.errors && !err.errors.message) {
 			this.props.enqueueSnackbar(err.errors, {
+				anchorOrigin: {
+					vertical: 'top',
+					horizontal: 'right',
+				},
 				variant: 'error',
 				autoHideDuration: 3000
 			});
@@ -243,6 +259,13 @@ class AdminAddDriver extends Component {
 		this.setState({
 			isRequesting: false
 		});
+	}
+
+	/**
+	 *  Cancel Button
+	 */
+	cancel() {
+		this.props.history.push('/admin/drivers');
 	}
 
 	/**
@@ -397,6 +420,9 @@ class AdminAddDriver extends Component {
 																			}
 																	</div>
 																	<div className="text-center">
+																		<button type="button" onClick={() => this.cancel()} className="btn btn-basic mr-2">
+																			<span>Cancel</span>
+																		</button>
 																		<button type="button" onClick={()=> this.addDriver()} className="btn btn-success mr-2">
 																			{
 																				isSubmitAddDriver &&	

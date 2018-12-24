@@ -2,14 +2,12 @@
  * Import Section
  */
 import React, { Component } from 'react';
-import validator from 'validator';
 import { withRouter } from "react-router";
 import { withSnackbar } from 'notistack';
 import { httpPost } from '../../../services/https';
-import { getUserDataFromLocalStorage } from '../../../services/helper';
+import { getUserDataFromLocalStorage, formatPhone, handleValidation} from '../../../services/helper';
 import '../style.css';
 import SearchDriver from './search-driver'
-import PhoneNumberFormat from '../../../pipes/phone-formate'
 import Sidebar from '../sidebar';
 import Topbar from '../topbar';
 import Loader from '../../../Loader/loader'
@@ -21,139 +19,59 @@ import MESSAGES from '../../../services/messages';
 class AdminAddDriver extends Component {
 
 	/**
-	 * Instance
+	 * Constructor
+	 * @param {*} props 
 	 */
-	_phoneFormat = new PhoneNumberFormat()
+	constructor(props) {
+		super(props);
+		this.user = getUserDataFromLocalStorage();
+	}
 
 	/**
-	 * state
+	 * State
 	 */
 	state = {
-		isSubmitAddDriver: false,
-		firstName: '',
-		name: '',
-		email: '',
-		address: '',
-		driver_id: 0,
-		city: '',
-		phone: '',
+		fields: {},
+		errors: {},
 		isRequesting: false,
-		error: {
-			isNameRequired: false,
-			isEmailRequired: false,
-			isValidEmail: false
-		}
-	};
-
-	componentDidMount() {}
-
-  /* Constructor */
-	constructor(props) {
-	    super(props);
-	    this.user = getUserDataFromLocalStorage();
+		isDataSearched: false
 	}
 
 	/**
 	 * Add Drivers
 	 */
 	addDriver() {
-		if(this.state.isSubmitAddDriver) {
-			return;
-		}
 		this.setState({
-			isSubmitAddDriver: true,
 			isRequesting: true
 		});
-		var checkFormValidation = this.checkAddDriverValidation();
-		if(checkFormValidation) {
-			this.splitName(this.state.name)
-			setTimeout(()=>{
-				var data = {
-					first_name: this.state.firstName,
-					last_name: this.state.lastName,
-					email: this.state.email,
-					role: 'driver',
-					driver_id: this.state.driver_id,
-					address: this.state.address,
-					city: this.state.city,
-					phone: this.state.phone
-				}
-				httpPost('/user/create', data).then((success)=> {
-					this.setState({
-						isSubmitAddDriver: false
-					});
-					this.props.enqueueSnackbar(MESSAGES.DRIVER_ADDED, {
-						anchorOrigin: {
-							vertical: 'top',
-							horizontal: 'right',
-						},
-						variant: 'success',
-						autoHideDuration: 3000
-					});
-					this.props.history.push('/admin/drivers');
-				}, (err) => {
-					this.handleErrorMessage(err);
-					this.setState({
-						isSubmitAddDriver: false,
-					});
-				});
-			},200)
-		}else {
-			this.setState({
-				isSubmitAddDriver: false,
-				isRequesting: false
-			});
-		}
-	}
-
-	/**
-	 * Validation
-	 */
-	checkAddDriverValidation() {
-		if(this.state.name === '' || this.state.name === null || this.state.name.length < 1) {
-			this.setState({
-				error: {
-					isNameRequired: true,
-					isEmailRequired: false,
-					isValidEmail: false
-				}
-			})
-			return false;
-		}
-
-		if(this.state.email === '' || this.state.email === null || this.state.email.length < 1) {
-			this.setState({
-				error: {
-					isNameRequired: false,
-					isLastNameRequired: false,
-					isEmailRequired: true,
-					isValidEmail: false
-				}
-			})
-			return false;
-		}
-
-		if(!validator.isEmail(this.state.email)) {
-			this.setState({
-				error: {
-					isNameRequired: false,
-					isEmailRequired: false,
-					isValidEmail: true
-				}
-			})
-			return false;
-		}
-
-		this.setState({
-			error: {
-				isNameRequired: false,
-				isEmailRequired: false,
-				isValidEmail: false
+		this.splitName(this.state.fields.name)
+		setTimeout(()=>{
+			var data = {
+				first_name: this.state.first_name,
+				last_name: this.state.last_name,
+				email: this.state.fields.email,
+				role: 'driver',
+				driver_id: this.state.fields.driver_id,
+				address: this.state.fields.address,
+				city: this.state.fields.city,
+				phone: this.state.fields.phone
 			}
-		})
-
-		return true;
-	}
+			httpPost('/user/create', data).then((success)=> {
+				this.props.enqueueSnackbar(MESSAGES.DRIVER_ADDED, {
+					anchorOrigin: {
+						vertical: 'top',
+						horizontal: 'right',
+					},
+					variant: 'success',
+					autoHideDuration: 3000
+				});
+				this.props.history.push('/admin/drivers');
+			}, (err) => {
+				this.handleErrorMessage(err);
+			
+			});
+		},200)
+	}	
 
 	/**
 	 * Split Name
@@ -170,9 +88,26 @@ class AdminAddDriver extends Component {
 		}
 		var last_name = ln.join(', ')
 		this.setState({
-			firstName: name[0],
-			lastName: last_name.replace(/,/g, ' ')
+			first_name: name[0],
+			last_name: last_name.replace(/,/g, ' ')
 		})
+	}
+
+	/**
+	 * Save Data
+	 * @param {*} e 
+	 */
+	saveData(e) {
+		var action = 'add';
+		e.preventDefault();
+		var data = handleValidation(this.state.fields, action);
+		if (data.isValid) {
+			this.addDriver();
+		} else {
+			this.setState({
+				errors: data.err
+			})
+		}
 	}
 
 	/**
@@ -180,45 +115,16 @@ class AdminAddDriver extends Component {
 	 */
 	getDriverDataOnSearch(driver) {
 		this.setState({
-			name: driver.reference_name,
-			driver_id: driver.fasttrac_driver_num,
-			email: driver.email,
-			address: driver.address_1,
-			city: driver.city,
-			phone: this.formatPhone(driver.phone)
+			fields: {
+				name: driver.reference_name,
+				driver_id: driver.fasttrac_driver_num,
+				email: driver.email,
+				address: driver.address_1,
+				city: driver.city,
+				phone: formatPhone(driver.phone)
+			},
+			isDataSearched: true
 		})
-	}
-
-	/**
-   * Format Cell Phone
-   *
-   * @param {String} phone
-   *
-   * @return {String}
-   */
-	formatPhone(phone) {
-		phone = String(phone)
-		var v = phone.replace(/[^\d]/g, '')
-		v = v.substring(0, 10)
-		var f = ''
-
-		switch (v.length) {
-			case 4:
-			case 5:
-			case 6:
-				f = v.replace(/(\d{3})/, '($1) ')
-				break
-
-			case 7:
-			case 8:
-			case 9:
-				f = v.replace(/(\d{3})(\d{3})/, '($1) $2-')
-				break
-
-			default:
-				f = v.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3')
-		}
-		return f
 	}
 
 	/**
@@ -269,11 +175,21 @@ class AdminAddDriver extends Component {
 	}
 
 	/**
+	 * Handled Input data
+	 * @param {*} e 
+	 * @param {*} field 
+	 */
+	handleChange(e, field) {
+		let fields = this.state.fields;
+		fields[field] = e.target.value;
+		this.setState({ fields });
+	}
+
+	/**
 	 * Render HTML
 	 */
 	render() {
 		const { user } = this.user;
-		const { isSubmitAddDriver } = this.state;
 		return (
 			<div className="container-scroller">
 				<div>
@@ -296,144 +212,75 @@ class AdminAddDriver extends Component {
 													<div className="card">
 														<div className="card-body">
 													<h2 className="card-title add-driver-title">Add Driver</h2>
-																<div className="text-left driver-form-wrapper">
-																<SearchDriver setData={data => this.getDriverDataOnSearch(data)} />
-																<form className="forms-sample">
-																	<div className="form-group">
-																		<label htmlFor="exampleInputID">Driver Number</label>
-																		<input
-																			type="text"
-																			className="form-control"
-																			onChange={e =>
-																				this.setState({
-																					driver_id: e.target.value
-																				})
-																			}
-																			value={
-																				this.state.driver_id
-																					? this.state.driver_id
-																					: ''
-																			}
-																			placeholder="Driver Number" disabled />															
-																	</div>
-																	<div className="form-group">
-																			<label htmlFor="exampleInputName1">Name</label>
-																			<input 
-																				type="text" 
-																				className="form-control" 
-																				onChange={e =>
-																					this.setState({
-																						name: e.target.value
-																					})
-																				}
-																				value={
-																					this.state.name
-																						? this.state.name
-																						: ''
-																				}
-																				placeholder="Name" />
-																			{
-																				this.state.error.isNameRequired &&
-																				<div className="form-error">Name is required</div>
-																			}
-																	</div>
-																	
-																	<div className="form-group">
-																		<label htmlFor="exampleInputAddress">Address</label>
-																		<input
-																			type="text"
-																			className="form-control"
-																			onChange={e =>
-																				this.setState({
-																					address: e.target.value
-																				})
-																			}
-																			value={
-																				this.state.address
-																					? this.state.address
-																					: ''
-																			}
-																			placeholder="Address" />
-																	</div>
-
-																	<div className="form-group">
-																		<label htmlFor="exampleInputAddress">City</label>
-																		<input
-																			type="text"
-																			className="form-control"
-																			onChange={e =>
-																				this.setState({
-																					city: e.target.value
-																				})
-																			}
-																			value={
-																				this.state.city
-																					? this.state.city
-																					: ''
-																			}
-																			placeholder="City" />
-																	</div>
-
-																	<div className="form-group">
-																		<label htmlFor="exampleInputAddress">Phone</label>
-																		<input
-																			type="text"
-																			className="form-control"
-																			onChange={e =>
-																				this.setState({
-																					phone: e.target.value
-																				})
-																			}
-																			value={																		
-																				this.state.phone
-																					?this.formatPhone(this.state.phone)
-																					: ''
-																			}
-																			placeholder="Phone" />
-																	</div>
-
-																	<div className="form-group">
-																			<label htmlFor="exampleInputEmail3">Email address</label>
-																			<input 
-																				type="email" 
-																				className="form-control" 
-																				onChange={e =>
-																					this.setState({
-																						email: e.target.value
-																					})
-																				}
-																				id="exampleInputEmail3" 
-																				placeholder="Email" 
-																				value={
-																					this.state.email
-																						? this.state.email
-																						: ''
-																				}
-																			/>
-																			{
-																				this.state.error.isEmailRequired &&
-																				<div className="form-error">Email is required</div>
-																			}
-																			{
-																				this.state.error.isValidEmail &&
-																				<div className="form-error">Please enter a vaild email addreess</div>
-																			}
-																	</div>
-																	<div className="text-center">
-																		<button type="button" onClick={() => this.cancel()} className="btn btn-basic mr-2">
-																			<span>Cancel</span>
-																		</button>
-																		<button type="button" onClick={()=> this.addDriver()} className="btn btn-success mr-2">
-																			{
-																				isSubmitAddDriver &&	
-																				<i className="mdi mdi-spin mdi-loading"></i>
-																			}
-																			{
-																				!isSubmitAddDriver &&
-																				<span>Save</span>
-																			}
-																		</button>
-																	</div>
+													<div className="text-left driver-form-wrapper">
+														<SearchDriver setData={data => this.getDriverDataOnSearch(data)} />
+														<form className="forms-sample">																
+															<div className="form-group">
+																<label htmlFor="exampleInputName1">Driver Number</label>
+																<input
+																	type="text"
+																	className="form-control"
+																	onChange={(e) => this.handleChange(e, "driver_id")} value={this.state.fields.driver_id ? this.state.fields.driver_id : ''}
+																	placeholder="Driver Id"
+																	disabled
+																/>
+															</div>
+															<div className="form-group">
+																<label htmlFor="exampleInputName1">Name</label>
+																<input
+																	type="text"
+																	className="form-control"
+																	onChange={(e) => this.handleChange(e, "name")} value={this.state.fields.name ? this.state.fields.name : ''}
+																	placeholder="Name"
+																/>
+																<div className="form-error">{this.state.errors["name"]}</div>
+															</div>
+															<div className="form-group">
+																<label htmlFor="exampleInputName1">Address</label>
+																<input
+																	type="text"
+																	className="form-control"
+																	onChange={(e) => this.handleChange(e, "address")} value={this.state.fields.address ? this.state.fields.address : ''}
+																	placeholder="Address"
+																/>
+																<div className="form-error">{this.state.errors["address"]}</div>
+															</div>
+															<div className="form-group">
+																<label htmlFor="exampleInputName1">City</label>
+																<input
+																	type="text"
+																	className="form-control"
+																	onChange={(e) => this.handleChange(e, "city")} value={this.state.fields.city ? this.state.fields.city : ''}
+																	placeholder="City"
+																/>
+																<div className="form-error">{this.state.errors["city"]}</div>
+															</div>
+															<div className="form-group">
+																<label htmlFor="exampleInputName1">Phone</label>
+																<input
+																	type="text"
+																	className="form-control"
+																	onChange={(e) => this.handleChange(e, "phone")} value={this.state.fields.phone ? formatPhone(this.state.fields.phone) : ''}
+																	placeholder="Phone"
+																/>
+																<div className="form-error">{this.state.errors["phone"]}</div>
+															</div>
+															<div className="form-group">
+																<label htmlFor="exampleInputName1">Email</label>
+																<input
+																	type="text"
+																	className="form-control"
+																	onChange={(e) => this.handleChange(e, "email")} value={this.state.fields.email ? this.state.fields.email : ''}
+																	placeholder="Email"
+																/>
+																<div className="form-error">{this.state.errors["email"]}</div>
+															</div>
+															<div className="text-center">
+																<button type="button" onClick={() => this.cancel()} className="btn btn-basic mr-2">
+																	<span>Cancel</span>
+																</button>
+																<button type="button" onClick={(e) => this.saveData(e)} className="btn btn-success mr-2" disabled={!this.state.isDataSearched}>Save</button>
+															</div>
 																</form>
 													</div>
 														</div>

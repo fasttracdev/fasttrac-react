@@ -6,7 +6,7 @@ import {
   Redirect 
 } from 'react-router-dom';
 import './style/materialdesignicons.css';
-import './App.css';
+import './App.scss';
 
 //Components
 import Callback from './components/callback';

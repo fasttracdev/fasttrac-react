@@ -65,6 +65,14 @@ class Sidebar extends Component {
 							</a>
 						</li> : null
 					}
+					{
+						user.user_metadata.role === 'admin' ?
+							<li className={(location.pathname === '/admin/settlement-reports') ? 'nav-item active sidebar-link' : 'nav-item sidebar-link'}>
+								<a className="nav-link" onClick={() => { this.gotoRoute('/admin/settlement-reports') }} >
+									<i className="menu-icon mdi mdi-note" />
+									<span className="menu-title">Sattlement Report</span>
+								</a>
+							</li> : null}
 				</ul>
 			</nav>
 		);

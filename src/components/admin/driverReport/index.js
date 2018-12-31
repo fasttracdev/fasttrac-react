@@ -40,7 +40,7 @@ class AdminDriversReports extends Component {
     is_filter: false,
     driver_name: '',
     driver_id: '',
-    ref: '',
+    chg_code: '',
     customer: ''
   };
 
@@ -65,9 +65,9 @@ class AdminDriversReports extends Component {
         <span>Customer </span> <i className="mdi mdi-sort header-icon"></i>
       </div>, dataIndex: 'customer', key: 'customer', width: 1000 },
     {
-      title: <div onClick={() => { this.sortList('ref') }}>
-        <span>Ref </span> <i className="mdi mdi-sort header-icon"></i>
-      </div>, dataIndex: 'ref', key: 'ref', width: 1000 },
+      title: <div onClick={() => { this.sortList('chg_code') }}>
+        <span>Change Code </span> <i className="mdi mdi-sort header-icon"></i>
+      </div>, dataIndex: 'chg_code', key: 'chg_code', width: 1000 },
     { title: 'Amount Billed', dataIndex: 'amount_billed', key: 'amount_billed', width: 1000 },
     {
       title: <div onClick={() => { this.sortList('consignee') }}>
@@ -153,8 +153,8 @@ class AdminDriversReports extends Component {
     if (this.state.driver_id) {
       params['driver_id'] = this.state.driver_id
     }
-    if (this.state.ref) {
-      params['ref'] = this.state.ref
+    if (this.state.chg_code) {
+      params['chg_code'] = this.state.chg_code
     }
     if (this.state.customer) {
       params['customer'] = this.state.customer
@@ -254,7 +254,7 @@ class AdminDriversReports extends Component {
   
   reset() {
     this.setState({
-      ref: '',
+      chg_code: '',
       driver_id: '',
       customer:'',
       driver_name:''
@@ -327,17 +327,17 @@ class AdminDriversReports extends Component {
                         />
                       </div>
                       <div className="grid-margin stretch-card form-group">
-                        <label htmlFor="exampleInputID">Ref</label>
+                        <label htmlFor="exampleInputID">Change Code</label>
                         <input
                           className="form-control"
-                          id="ref"
-                          name="ref"
-                          placeholder="Ref"
+                          id="chg_code"
+                          name="chg_code"
+                          placeholder="Change Code"
                           type="text"
                           onChange={(e) => this.setState({
-                            ref: e.target.value
+                            chg_code: e.target.value
                           })}
-                          value={this.state.ref}
+                          value={this.state.chg_code}
                           autoComplete="Off"
                         />
                       </div>
@@ -424,8 +424,8 @@ class AdminDriversReports extends Component {
                     <td>{report.week ? report.week : '---'}</td>
                   </tr>
                   <tr>
-                    <td>Ref</td>
-                    <td>{report.ref ? report.ref : '---'}</td>
+                    <td>Change Code</td>
+                    <td>{report.chg_code ? report.chg_code : '---'}</td>
                   </tr>
                   <tr>
                     <td>Customer</td>

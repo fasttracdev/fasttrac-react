@@ -341,3 +341,42 @@
 .dashboard-card {
   cursor: pointer;
 }
+
+.report-table {
+  margin: 0 15px;
+}
+.table-head-row {
+  th {
+    padding-left: 10px !important;
+  }
+}
+.table-top-bottom {
+  background: rgb(170, 170, 170) !important;
+}
+.inline-block {
+  display: inline-block;
+}
+.top-filters {
+  margin: 15px;
+  text-align: left;
+  .inline-block {
+    margin-right: 10px;
+    input {
+      border: 1px solid #eee;
+        padding: 3px 8px;
+    }
+  }
+}
+.table-warper {
+  width: 80%;
+  margin: auto;
+  .dropdown {
+    .dropdown-menu {
+      height: 200px;
+      overflow-y: auto;
+    }
+  }
+  .table {
+    margin-bottom: 10px;
+  }
+}

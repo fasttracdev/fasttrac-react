@@ -2,7 +2,7 @@
  * import Section
  */
 import React, { Component } from 'react';
-import Table from 'rc-table';
+import { Table } from 'reactstrap'
 import { withSnackbar } from 'notistack';
 import { withRouter } from "react-router";
 import { httpGet } from '../../services/https';
@@ -10,10 +10,16 @@ import { getUserDataFromLocalStorage } from '../../services/helper';
 import '../../components/admin/style.css';
 import Topbar from '../../components/admin/topbar';
 import Loader from '../../Loader/loader'
-import ReactPaginate from 'react-paginate'
-import Modal from 'react-responsive-modal';
 import Sidebar from '../../components/admin/sidebar';
 import ENV from '../../environment/env'
+import DayPickerInput from 'react-day-picker/DayPickerInput';
+import MomentLocaleUtils, {
+  formatDate,
+  parseDate,
+} from 'react-day-picker/moment';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import moment from 'moment';
 
 var numeral = require('numeral');
 
@@ -38,43 +44,11 @@ class DriversReports extends Component {
     open: false,
     is_filter: false,
     chg_code: '',
-    customer: ''
-  };
-
-	/**
-	 * Column
-	 */
-  columns = [
-    // { title: 'Driver Name', dataIndex: 'drivername', key: 'drivername', width: 1000 },
-    // { title: 'Driver Id', dataIndex: 'driver_id', key: 'driver_id', width: 1000 },
-    // { title: 'S No', dataIndex: 'key', key: 'key', width: 1000 },
-    {
-      title: <div onClick={() => { this.sortList('week') }}>
-        <span>Week </span> <i className="mdi mdi-sort header-icon"></i>
-      </div>, dataIndex: 'week', key: 'week', width: 1000 },
-    {
-      title: <div onClick={() => { this.sortList('customer') }}>
-        <span>Customer </span> <i className="mdi mdi-sort header-icon"></i>
-      </div>, dataIndex: 'customer', key: 'customer', width: 1000 },
-    {
-      title: <div onClick={() => { this.sortList('chg_code') }}>
-        <span>Change Code </span> <i className="mdi mdi-sort header-icon"></i>
-      </div>, dataIndex: 'chg_code', key: 'chg_code', width: 1000 },
-    { title: 'Amount Billed', dataIndex: 'amount_billed', key: 'amount_billed', width: 1000 },
-    {
-      title: <div onClick={() => { this.sortList('consignee') }}>
-        <span>Consignee </span> <i className="mdi mdi-sort header-icon"></i>
-      </div>, dataIndex: 'consignee', key: 'consignee', width: 1000 },
-    // { title: 'Shipper', dataIndex: 'shipper', key: 'shipper', width: 1000 },
-    // { title: 'Pu City', dataIndex: 'pu_city', key: 'pu_city', width: 1000 },
-    // { title: 'Pu State', dataIndex: 'pu_state', key: 'pu_state', width: 1000 },
-    // { title: 'De City', dataIndex: 'de_city', key: 'de_city', width: 1000 },
-    // { title: 'De State', dataIndex: 'de_state', key: 'de_state', width: 1000 },
-    {
-      title: 'Actions', dataIndex: 'id', key: 'operations',
-      render: (val) => <div><button type="button" title="Edit" onClick={() => { this.viewReport(val) }} className="btn margin-right10 btn-icons btn-rounded btn-inverse-outline-primary"><i className="mdi mdi-eye"></i></button></div>
-    }
-  ];
+    customer: '',
+    selectedDay: undefined,
+    from: undefined,
+    to: undefined,
+  };	
 
 	/**
 	 * When Component Did Mount
@@ -96,7 +70,7 @@ class DriversReports extends Component {
     this.setState({
       isRequesting: true
     })
-    var url = '/fasttrac/driver-report?'
+    var url = '/fasttrac/driver-settlement-report'
     var params = this.getFilterParams();
     httpGet(url, params).then((success) => {
       success.data.forEach(function (element, key) {
@@ -105,7 +79,6 @@ class DriversReports extends Component {
       });
       this.setState({
         driversReports: success.data,
-        total_pages: success.meta.pagination.total_pages,
         isRequesting: false
       });
     }, (err) => {
@@ -113,86 +86,26 @@ class DriversReports extends Component {
     });
   }
 
-  /**
- * Toggle agent filter
- */
-  toggleFilter() {
-    this.setState({
-      is_filter: !this.state.is_filter,
-    })
-  }
+ 
 
   /**
    * Apply Filter and seting params
    */
-  getFilterParams(key) {
+  getFilterParams() {
     let params = {}
-
-    params['order_dir'] = this.state.order_dir
-    params['order_field'] = this.state.order_field
-
-    if (this.state.page) {
-      params['page'] = this.state.page
+    if (this.state.start_del_date) {
+      params['start_del_date'] = this.state.start_del_date
     }
 
-    if (this.state.limit) {
-      params['limit'] = this.state.limit
+    if (this.state.end_del_date) {
+      params['end_del_date'] = this.state.end_del_date
     }
 
-    if (this.state.ch) {
-      params['chg_code'] = this.state.chg_code
+    if (this.state.terminal && this.state.terminal !== 'all') {
+      params['terminal'] = this.state.terminal
     }
-    if (this.state.customer) {
-      params['customer'] = this.state.customer
-    }
-
+   
     return params
-  }
-
-  /**
- * make Query string
- */
-  encodeQueryData(data) {
-    const ret = [];
-    for (let d in data)
-      ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]));
-    return ret.join('&');
-  }
-
-	/**
-   * Export Report
-   */
-  exportReport() {
-    const querystring = this.encodeQueryData(this.getFilterParams());
-    var url = this._env.getENV().API_BASE_URL + '/fasttrac/download-driver-report?'
-    url += 'token=Bearer ' + getUserDataFromLocalStorage().token
-    url += '&' + querystring
-    window.open(url);
-  }
-
-  viewReport(id) {
-    var ele = {}
-    this.state.driversReports.forEach(function (element, key) {
-      if(element.id === id) {
-        ele = element;
-      }
-    });
-
-    this.setState({ open: true, report: ele });
-  }
-
-  onCloseModal = () => {
-    this.setState({ open: false });
-  };
-
-  /**
-  * sortList
-  */
-  sortList(val) {
-    this.setState({
-      order_dir: this.state.order_dir === 'desc' ? 'asc' : 'desc',
-      order_field: val,
-    }, () => this.getDriversReport())
   }
 
 	/**
@@ -224,203 +137,146 @@ class DriversReports extends Component {
     })
   }
 
-	/**
-   * handle pagination
-   * @param  p
-   */
-  handlePagination(p) {
-    var page = p.selected + 1
-    if (page === this.state.page) return
-    this.setState({ page: page }, () => {
-      this.getDriversReport()
-    })
+  printDiv() {
+    var divToPrint = document.getElementById('DivIdToPrint');
+    html2canvas(divToPrint, { width: 2300, height: 3000 }).then(function (canvas) {
+      var base64image = canvas.toDataURL("image/png");
+      const doc = new jsPDF('', 'mm', [canvas.width, canvas.height]);
+      doc.addImage(base64image, 'png', 0, 0, canvas.width / 2, canvas.height / 2);
+      doc.save('report.pdf');
+    });
   }
 
-  reset() {
-    this.setState({
-      chg_code: '',
-      customer: '',
-    }, () => this.getDriversReport())
+
+  selectedDate(type, date) {
+    var date_format = moment(date).format("YYYY-MM-DD");
+    if (type === 'to') {
+      this.setState({
+        end_del_date: date_format,
+        to: date
+      }, () => this.getDriversReport())
+    } else {
+      this.setState({
+        from: date,
+        start_del_date: date_format
+      })
+    }
   }
 
   render() {
     const { user } = this.user;
-    const { open, report } = this.state;
-
+    const { from, to } = this.state;
+    const modifiers = { start: from, end: to };
+    var totPay = 0;
     return (
       <div className="container-scroller">
-        <div>
-
-        </div>
         {/* partial:partials/_navbar.html */}
         <Topbar user={user} />
 
         {/* partial */}
         <div className="container-fluid page-body-wrapper">
+          {/* partial:partials/_sidebar.html */}
           <Sidebar user={user} />
           {this.state.isRequesting ?
             <Loader isLoader={this.state.isRequesting} /> :
-            <div className="main-panel">
-              <div className="content-wrapper">
-
-                <div className="grid-margin stretch-card">
-                  <div className="advanced-filters-wrap">
-                    <div className="table-btns">
-                      <button
-                        onClick={() => this.toggleFilter()}
-                        className="btn btn-primary"
-                      >
-                        Advanced Filter <i className="mdi mdi-arrow-down" />
-                      </button>
-                    </div>
-                  </div>
+            <div className="table-warper">
+              <div className="top-filters">
+                <div className="inline-block">
+                  <DayPickerInput
+                    value={from}
+                    formatDate={formatDate}
+                    parseDate={parseDate}
+                    format="LL"
+                    placeholder={`From`}
+                    dayPickerProps={{
+                      selectedDays: [from, { from, to }],
+                      disabledDays: { after: to },
+                      toMonth: to,
+                      modifiers
+                    }}
+                    onDayChange={(e) => this.selectedDate('from', e)}
+                  />
                 </div>
-                {
-                  this.state.is_filter ?
-                    <div className="filter-inner-content">
-                      <div className="grid-margin stretch-card form-group">
-                        <label htmlFor="exampleInputID">Change Code</label>
-                        <input
-                          className="form-control"
-                          id="chg_code"
-                          name="chg_code"
-                          placeholder="Change Code"
-                          type="text"
-                          onChange={(e) => this.setState({
-                            chg_code: e.target.value
-                          })}
-                          value={this.state.chg_code}
-                          autoComplete="Off"
-                        />
-                      </div>
-                      <div className="grid-margin stretch-card form-group">
-                        <label htmlFor="exampleInputID">Customer</label>
-                        <input
-                          className="form-control"
-                          id="customer"
-                          name="customer"
-                          placeholder="Customer"
-                          type="text"
-                          onChange={(e) => this.setState({
-                            customer: e.target.value
-                          })}
-                          value={this.state.customer}
-                          autoComplete="Off"
-                        />
-                      </div>
-                      <button type="button" onClick={() => this.reset()} className="btn btn-primary apply-btn">Reset</button>   
-                      <button type="button" onClick={() => this.getDriversReport()} className="btn btn-success apply-btn">Apply</button>
-                    </div> : null
-                }
-
-                <div className="row">
-                  <div className="col-lg-12 grid-margin stretch-card">
-                    <div className="card">
-                      <div className="card-body">
-                        <h2 className="card-title">
-                          <span>Driver Report Listing</span>
-                          {/* <button type="button" onClick={() => this.exportReport()} className="btn btn-success mr-2 export-btn">Export</button> */}
-                        </h2>
-                        <button type="button" onClick={() => this.exportReport()} className="btn btn-success btn-fw add-driver-btn" disabled={this.state.driversReports.length <= 0}>Export</button>
-                        <div className="table-responsive">
+                <div className="inline-block">
+                  <DayPickerInput
+                    value={to}
+                    formatDate={formatDate}
+                    parseDate={parseDate}
+                    format="LL"
+                    placeholder={`To`}
+                    dayPickerProps={{
+                      selectedDays: [from, { from, to }],
+                      disabledDays: { before: from },
+                      modifiers,
+                      month: from,
+                      fromMonth: from
+                    }}
+                    inputProps={{
+                      disabled: !this.state.start_del_date || this.state.start_del_date === '' ? true : false
+                    }}
+                    onDayChange={(e) => this.selectedDate('to', e)}
+                  />
+                </div>               
+                <button className="btn btn-success btn-fw float-right" onClick={() => this.printDiv()} disabled={this.state.driversReports.length <= 0}>Print</button>
+              </div>
+              <div id="DivIdToPrint">
+                {this.state.driversReports.length > 0 ?
+                      <Table striped className="report-table" >
+                        <tbody>
+                          <tr className="table-top-bottom">
+                            <td>Driver: {this.state.driversReports[0].drivername}</td>
+                            <td colSpan='6'>#: {this.state.driversReports[0].driver_id}</td>
+                          </tr>
+                          <tr>
+                            <td>CNTRL#: {this.state.driversReports[0].cntrl}</td>
+                            <td colSpan='6'>{this.state.driversReports[0].customer}</td>
+                          </tr>
+                          <tr>
+                            <td>{this.state.driversReports[0].shipper}</td>
+                            <td>{this.state.driversReports[0].consignee}</td>
+                            <td colSpan='5'>DELIVERY DATE: {this.state.driversReports[0].del_date}</td>
+                          </tr>
+                          <tr>
+                            <td>{this.state.driversReports[0].pu_city}, {this.state.driversReports[0].pu_state}</td>
+                            <td colSpan='6'>{this.state.driversReports[0].de_city}, {this.state.driversReports[0].de_state}</td>
+                          </tr>
+                          <tr className="table-head-row">
+                            <th>Change Code</th>
+                            <th>Billed to Cust</th>
+                            <th>Line Haul</th>
+                            <th>Line Haul Pay</th>
+                            <th>Imputted Fuel</th>
+                            <th>Imputted Insurance</th>
+                            <th>Total Pay</th>
+                          </tr>
                           {
-                            this.state.driversReports.length > 0 ?
-                              <Table columns={this.columns} className="table table-bordered" data={this.state.driversReports} /> :
-                              "No Record Found!"
+                            this.state.driversReports.map((d, j) => {
+                              totPay += parseFloat(d.total_pay === '-' ? 0 : d.total_pay)
+                              return (
+                                <tr key={j}>
+                                  <td>{d.chg_code}</td>
+                                  <td>{numeral(d.amount_billed).format('$0,0.00')}</td>
+                                  <td>{numeral(d.line_haul).format('$0,0.00')}</td>
+                                  <td>{numeral(d.line_haul_pay).format('$0,0.00')}</td>
+                                  <td>{numeral(d.imputted_fuel).format('$0,0.00')}</td>
+                                  <td>{numeral(d.imputted_insurance).format('$0,0.00')}</td>
+                                  <td>{numeral(d.total_pay).format('$0,0.00')}</td>
+                                </tr>
+                              )
+                            })
                           }
-                        </div>
-                        {
-                          this.state.driversReports.length > 0 ?
-                            <div className="pagination-wrapper mt-3 mb-3 ml-3">
-                              <ReactPaginate previousLabel={"<"}
-                                nextLabel={">"}
-                                breakClassName={"break-me"}
-                                pageCount={this.state.total_pages}
-                                marginPagesDisplayed={2}
-                                pageRangeDisplayed={1}
-                                breakLabel={". . ."}
-                                onPageChange={e => this.handlePagination(e)}
-                                containerClassName={"pagination"}
-                                activeClassName={'active'}
-                                subContainerClassName={"pages pagination"}
-                                initialPage={this.state.page - 1}
-                              />
-                            </div> : null
-                        }
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                          <tr className="table-top-bottom">
+                            <td colSpan="7" className="text-right">
+                              Total: {numeral(totPay).format('$0,0.00')}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </Table>
+                    : null}
               </div>
-
-              {/* footer */}
-              <footer className="footer">
-                <div className="container-fluid clearfix">
-                  <span className="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © 2018
-      						{/* <a href="http://www.bootstrapdash.com/" target="_blank">Bootstrapdash</a>. All rights reserved. */}
-                  </span>
-                </div>
-              </footer>
             </div>}
-          <Modal open={open} onClose={this.onCloseModal}>
-            <div className="report-modal-wrap">
-              <h3 className="pb-0">Report</h3>
-              <div className="p-3 pb-4">
-                <table className="table report-table">
-                  <tr>
-                    <td>Driver Name</td>
-                    <td>{report.drivername ? report.drivername : '---'}</td>
-                  </tr>
-                  <tr>
-                    <td>Week</td>
-                    <td>{report.week ? report.week : '---'}</td>
-                  </tr>
-                  <tr>
-                    <td>Change Code</td>
-                    <td>{report.chg_code ? report.chg_code : '---'}</td>
-                  </tr>
-                  <tr>
-                    <td>Customer</td>
-                    <td>{report.customer ? report.customer : '---'}</td>
-                  </tr>
-                  <tr>
-                    <td>Amount Billed</td>
-                    <td>{report.amount_billed ? report.amount_billed : '---'}</td>
-                  </tr>
-                  <tr>
-                    <td>Shipper</td>
-                    <td>{report.shipper ? report.shipper : '---'}</td>
-                  </tr>
-                  <tr>
-                    <td>Driver Id</td>
-                    <td>{report.driver_id ? report.driver_id : '---'}</td>
-                  </tr>
-                  <tr>
-                    <td>Consignee</td>
-                    <td>{report.consignee ? report.consignee : '---'}</td>
-                  </tr>
-                  <tr>
-                    <td>Pu City</td>
-                    <td>{report.pu_city ? report.pu_city : '---'}</td>
-                  </tr>
-                  <tr>
-                    <td>Pu State</td>
-                    <td>{report.pu_state ? report.pu_state : '---'}</td>
-                  </tr>
-                  <tr>
-                    <td>De City</td>
-                    <td>{report.de_city ? report.de_city : '---'}</td>
-                  </tr>
-                  <tr>
-                    <td>De State</td>
-                    <td>{report.de_state ? report.de_state : '---'}</td>
-                  </tr>
-                </table>
-              </div>
-            </div>
-          </Modal>
         </div>
-      </div>
+      </div> 
     );
   }
 }

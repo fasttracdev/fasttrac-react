@@ -50,10 +50,12 @@ class SettlementReports extends Component {
     start_del_date: '',
     end_del_date: '',
     page: 1,
-    limit: 100,
+    limit: 50,
     total: 0,
     isRequesting: false,
-    tIds: []
+    isDropDownLoader: false,
+    tIds: [],
+    val: 0
   };
 
   sortNumber(a, b) {
@@ -68,7 +70,7 @@ class SettlementReports extends Component {
       doc.addImage(base64image, 'png', 0, 0, canvas.width / 2, canvas.height / 2);
       doc.save('report.pdf');         
     });     
-  }
+  } 
  
 
   /**
@@ -79,13 +81,14 @@ class SettlementReports extends Component {
       isRequesting: true
     })
     let url = '/fasttrac/drivers'
-    url += '?page=' + this.state.page  
-    url += '&limit=' + this.state.limit  
+    url += '?limit=' + this.state.limit  
+    url += '&page=' + this.state.page  
     httpGet(url).then((success) => {
       var arr = []
       var ids =[]
       this.setState({
-        isRequesting: false
+        isRequesting: false,
+        isDropDownLoader: false
       })
       if (success.data.length <= 0) {
         return
@@ -128,26 +131,31 @@ class SettlementReports extends Component {
       }
     }, (err) => {
       this.setState({
-        isRequesting: false
+        isRequesting: false,
+        isDropDownLoader: false
       })
     });
   }
 
   handleScroll(event) {
+    this.setState({
+      val: 2
+    })
     if (
-      event.target.offsetHeight + event.target.scrollTop >=
-      event.target.scrollHeight
+      event.target.offsetHeight + event.target.scrollTop - this.state.val === event.target.scrollHeight
     ) {
       if (this.state.total === this.state.driverData.length) {
         return
       }
       setTimeout(() => {
         this.setState({
-          page: this.state.page + 1
+          page: this.state.page + 1,
+          isDropDownLoader: true,
+          val: 0
         })
         this.getDriversList()
       }, 200)
-    }
+    }   
   }
 
 	/**
@@ -334,7 +342,7 @@ class SettlementReports extends Component {
                   />
                 </div>
                 {/* <DayPicker /> */}
-                <div className="inline-block">
+              <div className="inline-block dropwithloader">
                   <Dropdown direction="down" isOpen={this.state.isOpen} toggle={() => this.toggle()} onScroll={e => this.handleScroll(e)}>
                     <DropdownToggle caret>
                       Select Terminal
@@ -347,21 +355,23 @@ class SettlementReports extends Component {
                           }) : <DropdownItem />
 
                       }
+                    <DropdownItem><Loader isLoader={this.state.isDropDownLoader} /></DropdownItem>
                     </DropdownMenu>
                   </Dropdown>
                 </div>
-                <div className="inline-block">
+                <div className="inline-block dropwithloader">
                     <Dropdown direction="down" isOpen={this.state.dropdownOpen} toggle={() => this.toggle2()} onScroll={e => this.handleScroll(e)}>
                     <DropdownToggle caret>
                       Select Driver
-                  </DropdownToggle>
+                    </DropdownToggle>
                     <DropdownMenu>
                       {
                         this.state.driverData.length > 0 ?
-                          this.state.driverData.map((list, i) => {
-                            return (<DropdownItem onClick={(e) => this.select2(e, list)} key={i}>{list.reference_name}</DropdownItem>)
-                          }) : <DropdownItem />
+                        this.state.driverData.map((list, i) => {
+                          return (<DropdownItem onClick={(e) => this.select2(e, list)} key={i}>{list.reference_name}</DropdownItem>)
+                        }) : <DropdownItem />
                       }
+                    <DropdownItem><Loader isLoader={this.state.isDropDownLoader} /></DropdownItem>
                     </DropdownMenu>
                   </Dropdown>
                 </div>
@@ -425,7 +435,7 @@ class SettlementReports extends Component {
                       )
                       }) : null }
                   </div>
-            </div>  }
+              </div> }
          </div> 
       </div> 
       );

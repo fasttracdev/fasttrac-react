@@ -48,6 +48,8 @@ class DriversReports extends Component {
     selectedDay: undefined,
     from: undefined,
     to: undefined,
+    end_del_date: '',
+    start_del_date: ''
   };	
 
 	/**
@@ -67,6 +69,7 @@ class DriversReports extends Component {
 	 * get Drivers Report
 	 */
   getDriversReport() {
+    if (!this.state.end_del_date || this.state.end_del_date === '') return
     this.setState({
       isRequesting: true
     })
